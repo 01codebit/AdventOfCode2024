@@ -1,0 +1,9 @@
+How to compile:
+
+gcc.exe -o aoc main.c file_reader.c computing.c printer.c
+
+How to use:
+
+aoc <filename> <debug (0|1)>
+
+default debug value: 0
