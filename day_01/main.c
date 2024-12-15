@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "computing.h"
 #include "printer.h"
 #include "file_reader.h"
+#include "distance.h"
+#include "similarity.h"
 
 int main(int argc, char* argv[])
 {
@@ -51,10 +52,18 @@ int main(int argc, char* argv[])
     order_list(d.array2, d.size);
     if(debug) print_array("ordered second list", d.array2, d.size);
 
+
+    // #1 --------------------------------------------------------------
     int* delta_array = distance_sum_array(d.array1, d.array2, d.size);
     if(debug) print_array("delta list", delta_array, d.size);
+    printf("\ntotal delta: %d\n", array_sum(delta_array, d.size));
+    // -----------------------------------------------------------------
 
-    printf("\ntotal delta: %d\n\n", array_sum(delta_array, d.size));
+    // #2 --------------------------------------------------------------
+    int similarity = similarity_score(d.array1, d.array2, d.size);
+    printf("\nsimilarity score: %d\n", similarity);
+    // -----------------------------------------------------------------
 
+    printf("\n");
     return 0;
 }

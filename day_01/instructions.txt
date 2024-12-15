@@ -1,6 +1,6 @@
 How to compile:
 
-gcc.exe -o aoc main.c file_reader.c computing.c printer.c
+gcc.exe -o aoc main.c file_reader.c printer.c distance.c similarity.c
 
 How to use:
 

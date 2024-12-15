@@ -1,0 +1,1 @@
+int similarity_score(int* first_list, int* second_list, int size);
