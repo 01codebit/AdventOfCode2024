@@ -1,0 +1,1 @@
+int total_safe_count(int** data, int reports, int* levels);
