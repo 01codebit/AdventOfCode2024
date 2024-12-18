@@ -1,0 +1,1 @@
+int parse_string(char* text, int len);

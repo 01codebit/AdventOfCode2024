@@ -2,8 +2,6 @@
 
 void add_char_to_text(char* text, char c, int size)
 {
-    text = (char*)realloc(text, size * sizeof(char));
-    text[size-1] = c;
 }
 
 data read_file(char* filename)
@@ -11,16 +9,25 @@ data read_file(char* filename)
     FILE* input = fopen(filename, "r");
 
     data result;
-    char* text = (char*)malloc(sizeof(char));
-    int length = 0;
+    char* text;
+    int count = 0;
 
     if(input != NULL)
     {
         char ch;
         while ((ch=fgetc(input)) != EOF)
         {
-            printf("%c\n", ch);
-            length++;
+            printf("[%d] %c\n", count, ch);
+            if(count==0)
+            {
+                text = (char*)malloc(sizeof(char));
+            }
+            else
+            {
+                text = (char*)realloc(text, count * sizeof(char));
+            }
+            text[count] = ch;
+            count++;
             // add_char_to_text(text, ch, length);
         }
 
@@ -33,7 +40,7 @@ data read_file(char* filename)
 
 
     result.text = text;
-    result.length = length;
+    result.length = count;
 
     return result;
 }

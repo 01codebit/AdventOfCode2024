@@ -3,6 +3,7 @@
 
 #include "../common/printer.h"
 #include "file_reader.h"
+#include "parser.h"
 
 int main(int argc, char* argv[])
 {
@@ -29,7 +30,13 @@ int main(int argc, char* argv[])
     data d = read_file(filename);
 
     printf("\ntext: %s\n", d.text);
-    printf("\nlength: %s\n", d.length);
+    printf("\nlength: %d\n", d.length);
+
+
+    int result = parse_string(d.text, d.length);
+
+    printf("result: %d\n", result);
+
 
     // if(debug)
     // {
@@ -48,6 +55,6 @@ int main(int argc, char* argv[])
     // int safe_count = total_safe_count(d.array, d.reports_count, d.levels_counts);
     // printf("\nsafe count: %d\n", safe_count);
 
-    // printf("\n");
+    printf("\n");
     return 0;
 }
