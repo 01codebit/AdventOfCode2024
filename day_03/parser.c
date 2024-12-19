@@ -5,6 +5,14 @@
 
 char* PATTERN = "mul(A,B)";
 
+
+int isNumber(char ch)
+{
+    int chi = (int)ch;
+    if(chi>=48 && chi<=57) return 1;
+    return 0;
+}
+
 // search for 'mul(xxx,yyy)'
 int parse_string(char* text, int len)
 {
@@ -19,7 +27,54 @@ int parse_string(char* text, int len)
         char ch = text[i];
         int chi = (int)ch;
 
-        // printf("[%d] %c --> count: %d\tresult: %d\n", i, ch, count, result);
+        printf("[%d] %c --> count: %d\tresult: %d\n", i, ch, count, result);
+
+        if(ch=='m' && count==0)
+        {
+            count++;
+        }
+        else if(ch=='u' && count==1)
+        {
+            count++;
+        }
+        else if(ch=='l' && count==2)
+        {
+            count++;
+        }
+        else if(ch=='(' && count==3)
+        {
+            count++;
+        }
+        else if(count==4 && isNumber(ch))
+        {
+            // aaa
+            aaa = aaa * 10 + chi-48;
+        }
+        else if(ch==',' && count==4)
+        {
+            count++;
+        }
+        else if(count==5 && isNumber(ch))
+        {
+            // bbb
+            bbb = bbb * 10 + chi-48;
+        }
+        else if(ch==')' && count==5)
+        {
+            // calcolo
+            result += aaa * bbb;
+            count = 0;
+            aaa = 0;
+            bbb = 0;
+        }
+        else
+        {
+            count = 0;
+            aaa = 0;
+            bbb = 0;
+        }
+
+/*
 
         // number
         if(chi>=48 && chi<=57)
@@ -98,6 +153,7 @@ int parse_string(char* text, int len)
             if(count>7) count=0;
         }
         else count=0;
+*/
     }
 
     return result;
