@@ -44,3 +44,36 @@ data read_file(char* filename)
 
     return result;
 }
+
+
+char* read_text(char* filename)
+{
+    FILE* input = fopen(filename, "r");
+
+    char* line = (char*)malloc(LINE_LEN*sizeof(char));
+    char* text = (char*)malloc(1024*sizeof(char));
+
+    // memset(text, 0, 1024*sizeof(char));
+
+    int count = 0;
+
+    if(input != NULL)
+    {
+        char ch;
+        while (fgets(line, LINE_LEN, input))
+        {
+            printf("%s\n", line);
+            strcmp(text, line);
+        }
+
+        fclose(input);
+    }
+    else
+    {
+        fprintf(stderr, "Unable to open the file!\n");
+    }
+
+    // printf("text: %s\n", text);
+
+    return text;
+}

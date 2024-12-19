@@ -11,3 +11,5 @@ typedef struct {
 } data;
 
 data read_file(char* filename);
+
+char* read_text(char* filename);

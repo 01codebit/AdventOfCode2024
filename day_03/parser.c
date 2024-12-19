@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-
-char* PATTERN = "mul(A,B)";
-
+#include <string.h>
 
 int isNumber(char ch)
 {
@@ -14,8 +12,10 @@ int isNumber(char ch)
 }
 
 // search for 'mul(xxx,yyy)'
-int parse_string(char* text, int len)
+int parse_string(char* text)
 {
+    int len = strlen(text);
+
     int count = 0;
     int aaa = 0;
     int bbb = 0;
@@ -27,7 +27,7 @@ int parse_string(char* text, int len)
         char ch = text[i];
         int chi = (int)ch;
 
-        printf("[%d] %c --> count: %d\tresult: %d\n", i, ch, count, result);
+        // printf("[%d] %c --> count: %d\tresult: %d\n", i, ch, count, result);
 
         if(ch=='m' && count==0)
         {
