@@ -1,5 +1,20 @@
 #include "file_reader.h"
 
+int get_file_length(FILE* f)
+{
+    if(fseek(f, 0, SEEK_END))
+    {
+        fprintf(stderr, "[fseek] error: %s [errno:%d]\n", strerror(errno), errno);
+    }
+    long length = ftell(f);
+    if(fseek(f, 0, SEEK_SET))
+    {
+        fprintf(stderr, "[fseek] error: %s [errno:%d]\n", strerror(errno), errno);
+    }
+
+    return length;
+}
+
 char* read_text(char* filename)
 {
     FILE* input = fopen(filename, "r");
@@ -9,20 +24,18 @@ char* read_text(char* filename)
 
     if(input)
     {
-        fseek(input, 0, SEEK_END);
-        length = ftell(input);
-        fseek(input, 0, SEEK_SET);
-        text = (char*)malloc(length*sizeof(char));
+        length = get_file_length(input);
+        text = (char*)malloc(length * sizeof(char));
         
         if(text)
         {
-            fread(text, 1, length, input);
+            fread(text, sizeof(char), length, input);
         }
         fclose(input);
     }
     else
     {
-        fprintf(stderr, "Unable to open the file!\n");
+       fprintf(stderr, "[fopen] unable to open the file '%s': %s [errno:%d]\n", filename, strerror(errno), errno);
     }
     text[length] = '\0';
 
