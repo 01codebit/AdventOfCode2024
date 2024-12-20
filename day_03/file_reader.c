@@ -13,6 +13,7 @@ char* read_text(char* filename)
         length = ftell(input);
         fseek(input, 0, SEEK_SET);
         text = (char*)malloc(length*sizeof(char));
+        
         if(text)
         {
             fread(text, 1, length, input);
@@ -23,6 +24,7 @@ char* read_text(char* filename)
     {
         fprintf(stderr, "Unable to open the file!\n");
     }
+    text[length] = '\0';
 
     return text;
 }

@@ -22,138 +22,119 @@ int parse_string(char* text)
     int result = 0;
     int numbers = 2;
 
+    int doCount = 0;
+    int dontCount = 0;
+
+    int enabled = 1;
+
     for(int i=0; i<len; i++)
     {
         char ch = text[i];
         int chi = (int)ch;
 
-        // printf("[%d] %c --> count: %d\tresult: %d\n", i, ch, count, result);
-
-        if(ch=='m' && count==0)
+        if(ch=='d' && doCount==0)
         {
-            count++;
+            doCount++;
         }
-        else if(ch=='u' && count==1)
+        else if(ch=='o' && doCount==1)
         {
-            count++;
+            doCount++;
         }
-        else if(ch=='l' && count==2)
+        else if(ch=='(' && doCount==2)
         {
-            count++;
+            doCount++;
         }
-        else if(ch=='(' && count==3)
+        else if(ch==')' && doCount==3)
         {
-            count++;
-        }
-        else if(count==4 && isNumber(ch))
-        {
-            // aaa
-            aaa = aaa * 10 + chi-48;
-        }
-        else if(ch==',' && count==4)
-        {
-            count++;
-        }
-        else if(count==5 && isNumber(ch))
-        {
-            // bbb
-            bbb = bbb * 10 + chi-48;
-        }
-        else if(ch==')' && count==5)
-        {
-            // calcolo
-            result += aaa * bbb;
-            count = 0;
-            aaa = 0;
-            bbb = 0;
+            doCount = 0;
+            enabled = 1;
         }
         else
         {
-            count = 0;
-            aaa = 0;
-            bbb = 0;
+            doCount = 0;
         }
 
-/*
-
-        // number
-        if(chi>=48 && chi<=57)
+        if(ch=='d' && dontCount==0)
         {
-            // printf("is a number\n");
-            if(numbers<0)
-            {
-                // printf("  numbers<0 - count:%d\n", count);
-                if(count==5)
-                {
-                    numbers=2;
-                }
-                // else if(count==7)
-                // {
-                //     numbers=2;
-                //     count=0;
-                //     aaa = 0;
-                //     bbb = 0;
-                // }
-            }
-            else if(count==4) // A
-            {
-                // printf("  count==%d set aaa\n", count);
-                aaa = aaa * 10 + chi-48;
-                // printf("- aaa: %d\n", aaa);
-                numbers--;
-                count++;
-            }
-            else if(count==5) // A
-            {
-                // printf("  count==%d set aaa\n", count);
-                aaa = aaa * 10 + chi-48;
-                // printf("- aaa: %d\n", aaa);
-                numbers--;
-            }
-            else if(count==6) // B
-            {
-                printf("  ch: %c count==%d set bbb\n", ch, count);
-                bbb = bbb * 10 + chi-48;
-                // printf("- bbb: %d\n", bbb);
-                numbers++;
-                count++;
-            }
-            else if(count==7) // B
-            {
-                printf("  ch: %c count==%d set bbb\n", ch, count);
-                bbb = bbb * 10 + chi-48;
-                // printf("- bbb: %d\n", bbb);
-                numbers++;
-            }
+            dontCount++;
         }
-        //  01234567
-        // "mul(A,B)"
-        else if(ch==PATTERN[count])
+        else if(ch=='o' && dontCount==1)
         {
-            // printf("ch in pattern\n");
-            if(count==5)
+            dontCount++;
+        }
+        else if(ch=='n' && dontCount==2)
+        {
+            dontCount++;
+        }
+        else if(ch=='\'' && dontCount==3)
+        {
+            dontCount++;
+        }
+        else if(ch=='t' && dontCount==4)
+        {
+            dontCount++;
+        }
+        else if(ch=='(' && dontCount==5)
+        {
+            dontCount++;
+        }
+        else if(ch==')' && dontCount==6)
+        {
+            dontCount = 0;
+            enabled = 0;
+        }
+        else
+        {
+            dontCount = 0;
+        }
+
+        if(enabled)
+        {
+            if(ch=='m' && count==0)
             {
-                // printf("  count==%d reset numbers\n", count);
-                numbers = 0;
                 count++;
             }
-            else if(count==7)
+            else if(ch=='u' && count==1)
             {
-                printf("  count==%d compute result aaa:%d * bbb:%d\n", count, aaa, bbb);
+                count++;
+            }
+            else if(ch=='l' && count==2)
+            {
+                count++;
+            }
+            else if(ch=='(' && count==3)
+            {
+                count++;
+            }
+            else if(count==4 && isNumber(ch))
+            {
+                // aaa
+                aaa = aaa * 10 + chi-48;
+            }
+            else if(ch==',' && count==4)
+            {
+                count++;
+            }
+            else if(count==5 && isNumber(ch))
+            {
+                // bbb
+                bbb = bbb * 10 + chi-48;
+            }
+            else if(ch==')' && count==5)
+            {
+                // calcolo
                 result += aaa * bbb;
+                count = 0;
                 aaa = 0;
                 bbb = 0;
-                numbers=2;
-                count=0;
             }
-            else 
+            else
             {
-                count++;
+                count = 0;
+                aaa = 0;
+                bbb = 0;
             }
-            if(count>7) count=0;
         }
-        else count=0;
-*/
     }
 
     return result;
