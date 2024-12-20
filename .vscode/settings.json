@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "file_reader.h": "c"
+        "file_reader.h": "c",
+        "word_searcher.h": "c"
     }
 }
