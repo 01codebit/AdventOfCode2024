@@ -24,9 +24,13 @@ int main(int argc, char* argv[])
     data t = read_matrix(filename);
     printf("\nmatrix rows:%d x cols:%d\n", t.rows, t.cols);
 
-    int result = count_occurrences(t.matrix, t.rows, t.cols, "XMAS");
+    char* word = "XMAS";
+    int result = count_occurrences(t.matrix, t.rows, t.cols, word);
+    printf("occurrences of '%s': %d\n", word, result);
 
-    printf("result: %d\n", result);
+    char* word2 = "MAS";
+    int result2 = count_x_occurrences(t.matrix, t.rows, t.cols, word2);
+    printf("crosses of '%s': %d\n", word2, result2);
 
     printf("\n");
     return 0;

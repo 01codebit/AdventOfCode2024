@@ -10,21 +10,29 @@ data read_matrix(char* filename)
     int len = 0;
     int cols = 0;
     char* line = 0;
-    
+    int chunks = 0;
+    int chunk_size = 256;
+
     if(input)
     {
         int exit = 1;
         while(exit)
         {
             ch = fgetc(input);
-
+            // printf("lines: %d, len: %d\n", lines, len);
             if(len==0)
             {
-                line = (char*)malloc(sizeof(char));
+                if(ch==EOF)
+                {
+                    break;
+                }
+                line = (char*)malloc(chunk_size*sizeof(char));
             }
-            else
+            else if(len>chunk_size)
             {
-                line = (char*)realloc(line, len*sizeof(char));
+                chunks++;
+                int new_size = chunks * chunk_size;
+                line = (char*)realloc(line, new_size*sizeof(char));
             }
 
             if(ch=='\n' || ch==EOF)
