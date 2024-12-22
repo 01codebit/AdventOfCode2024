@@ -43,9 +43,12 @@ int main(int argc, char* argv[])
     */
 
     int result = evaluate(t);
+    printf("middle pages sum: %d\n", result);
 
-    printf("result: %d\n", result);
+    int result2 = evaluate_and_fix(t);
+    printf("middle fixed pages sum: %d\n", result2);
 
     printf("\n");
+
     return 0;
 }

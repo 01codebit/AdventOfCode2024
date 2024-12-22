@@ -1,7 +1,7 @@
 #pragma once
 #define _DATA
 
-#define CHUNK_SIZE 8
+#define CHUNK_SIZE 256
 
 typedef struct {
     int prev;
@@ -9,7 +9,7 @@ typedef struct {
 } rule;
 
 typedef struct {
-    int* chapters;
+    int* pages;
     int size;
 } update;
 
