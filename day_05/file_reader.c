@@ -1,9 +1,7 @@
 #include "file_reader.h"
 
-rule* read_rules(FILE* input)
+int read_rules(FILE* input, rule* rules)
 {
-    rule* rules;
-
     char buffer[20];
     int rules_count = 0;
 
@@ -21,11 +19,7 @@ rule* read_rules(FILE* input)
         r.prev = pi;
         r.next = ni;
 
-        if(rules_count==0)
-        {
-            rules = (rule*)malloc(CHUNK_SIZE * sizeof(rule));
-        }
-        else if(rules_count % CHUNK_SIZE==0)
+        if((rules_count % CHUNK_SIZE)==0)
         {
             int new_size = rules_count / CHUNK_SIZE + 1;
             rules = (rule*)realloc(rules, new_size * CHUNK_SIZE * sizeof(rule));
@@ -35,14 +29,44 @@ rule* read_rules(FILE* input)
         rules_count++;
     }
 
-    for(int i=0; i<rules_count; i++)
-    {
-        printf("rule[%d] prev: %d - next: %d\n", i, rules[i].prev, rules[i].next);
-    }
-
-    return rules;
+    return rules_count;
 }
 
+int read_updates(FILE* input, update* updates)
+{
+    char line[256];
+    int updates_count = 0;
+    char* token;
+    int pages_count = 0;
+
+    while(fgets(line, 20, input))
+    {
+        pages_count = 0;
+        token = strtok(line, ",");
+        while(token!=NULL)
+        {
+            int current_int = atoi(token);
+
+            if(pages_count==0)
+            {
+                updates[updates_count].chapters = (int*)malloc(CHUNK_SIZE * sizeof(int));
+            }
+            else if((pages_count % CHUNK_SIZE)==0)
+            {
+                int new_size = pages_count % CHUNK_SIZE + 1;
+                updates[updates_count].chapters = (int*)realloc(updates[updates_count].chapters, new_size * CHUNK_SIZE * sizeof(int));
+            }
+            updates[updates_count].chapters[pages_count] = current_int;
+
+            pages_count++;
+            token = strtok(NULL, ",");
+        }
+        updates[updates_count].size = pages_count;
+        updates_count++;
+    }
+
+    return updates_count;
+}
 
 data read_data(char* filename)
 {
@@ -50,12 +74,17 @@ data read_data(char* filename)
     
     data result;
     rule* rules;
-    
+    int rules_count = 0;
+    update* updates;
+    int updates_count = 0;
+
     if(input)
     {
-        rules = read_rules(input);
+        rules = (rule*)malloc(CHUNK_SIZE * sizeof(rule));
+        rules_count = read_rules(input, rules);
 
-//        read_updates(input);
+        updates = (update*)malloc(CHUNK_SIZE * sizeof(update));
+        updates_count = read_updates(input, updates);
  
         fclose(input);
    }
@@ -65,6 +94,9 @@ data read_data(char* filename)
     }
 
     result.rules = rules;
+    result.rules_count = rules_count;
+    result.updates = updates;
+    result.updates_count = updates_count;
 
     return result;
 }

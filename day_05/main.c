@@ -3,6 +3,7 @@
 
 #include "../common/printer.h"
 #include "file_reader.h"
+#include "checker.h"
 
 int main(int argc, char* argv[])
 {
@@ -21,13 +22,29 @@ int main(int argc, char* argv[])
 
     printf("read file: '%s'\n", filename);
     data t = read_data(filename);
+    printf("read %d rules for %d updates\n", t.rules_count, t.updates_count);
 
-    int rules_count = sizeof(t.rules) / sizeof(rule);
+    /*
     printf("main ----------------------------------------------------------------\n");
-    for(int i=0; i<rules_count; i++)
+    for(int i=0; i<t.rules_count; i++)
     {
         printf("rule[%d] prev: %d - next: %d\n", i, t.rules[i].prev, t.rules[i].next);
     }
+    for(int i=0; i<t.updates_count; i++)
+    {
+        update current_update = t.updates[i];
+        printf("update[%d]:", i);
+        for(int j=0; j<current_update.size; j++)
+        {
+            printf(" %d", current_update.chapters[j]);
+        }
+        printf("\n");
+    }
+    */
+
+    int result = evaluate(t);
+
+    printf("result: %d\n", result);
 
     printf("\n");
     return 0;
