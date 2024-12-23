@@ -81,7 +81,7 @@ map read_map(char* filename)
        fprintf(stderr, "[fopen] unable to open the file '%s': %s [errno:%d]\n", filename, strerror(errno), errno);
     }
 
-    if(DEBUG)
+    // if(DEBUG)
     {
         printf("\n");
         printf("read %d lines\n", lines);
