@@ -9,3 +9,17 @@ void print_array(char* title, int* array, int len)
     }
     printf("\n");
 }
+
+void print_matrix(char** data, int rows, int cols)
+{
+    printf("\n");
+    for(int r=0; r<rows; r++)
+    {
+        for(int c=0; c<cols; c++)
+        {
+            printf("%c ", data[r][c]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}

@@ -3,6 +3,7 @@
         "file_reader.h": "c",
         "word_searcher.h": "c",
         "stdlib.h": "c",
-        "limits.h": "c"
+        "limits.h": "c",
+        "stdio.h": "c"
     }
 }

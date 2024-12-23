@@ -13,6 +13,9 @@ map read_map(char* filename)
     int chunks = 0;
     int chunk_size = 256;
 
+    int guard_x = -1;
+    int guard_y = -1;
+
     if(input)
     {
         int exit = 1;
@@ -20,6 +23,13 @@ map read_map(char* filename)
         {
             ch = fgetc(input);
             // printf("lines: %d, len: %d\n", lines, len);
+
+            if(ch==GUARD)
+            {
+                guard_x = len;
+                guard_y = lines;
+            }
+
             if(len==0)
             {
                 if(ch==EOF)
@@ -71,18 +81,20 @@ map read_map(char* filename)
        fprintf(stderr, "[fopen] unable to open the file '%s': %s [errno:%d]\n", filename, strerror(errno), errno);
     }
 
-    printf("\n");
-    printf("read %d lines\n", lines);
-    for(int i=0; i<lines; i++)
+    if(DEBUG)
     {
-        printf("[%d] %s\n", i, result[i]);
+        printf("\n");
+        printf("read %d lines\n", lines);
+        print_matrix(result, lines, cols);
+        printf("\n");
     }
-    printf("\n");
 
     map m;
     m.data = result;
     m.rows = lines;
     m.cols = cols;
+    m.guard_start_x = guard_x;
+    m.guard_start_y = guard_y;
 
     return m;
 }
