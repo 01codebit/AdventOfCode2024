@@ -44,7 +44,7 @@ int look_forward(map m, position p, direction d, char marker)
 {
     position look_at = go_forward(p, d);
     int result;
-    if(look_at.x<0 || look_at.x>=m.rows || look_at.y<0 || look_at.y>=m.cols)
+    if(look_at.x<0 || look_at.x>=m.cols || look_at.y<0 || look_at.y>=m.rows)
     {
         result = 0;
     }
@@ -77,8 +77,10 @@ int check_for_loop(map m, position gp, direction gd, position turn1, char marker
     int result = 0;
 
     if(gp.x == turn1.x || gp.y == turn1.y)
-    {
-        printf("x: %d %d - y: %d %d\n", gp.x, turn1.x, gp.y, turn1.y);
+    {   
+        if(gp.x == turn1.x) printf("  current x == turn1 x (%d, %d)\n", gp.x, gp.y);
+        if(gp.y == turn1.y) printf("  current y == turn1 y (%d, %d)\n", gp.x, gp.y);
+
         int look_at_forward = look_forward(m, gp, gd, marker);
         if(look_at_forward==2 || look_at_forward==3)
         {
@@ -114,8 +116,10 @@ int evaluate(map m)
     int loop_options = 0;
 
     int look_at = look_forward(m, guard_pos, guard_dir, marker);
+    int iterations = 0;
     while(1)
     {
+        printf("[iteration #%d] guard pos (%d, %d) guard dir (%d, %d) look_at (%d)\n", iterations, guard_pos.x, guard_pos.y, guard_dir.dx, guard_dir.dy, look_at);
         if(turns>2)
         {
             loop_options += check_for_loop(m, guard_pos, guard_dir, turns_positions[0], marker);
@@ -126,15 +130,17 @@ int evaluate(map m)
             m.data[guard_pos.y][guard_pos.x] = 'X';
             path_cells++;
             if(DEBUG) print_matrix(m.data, m.rows, m.cols);
+            printf("[EXIT]\n");
             break;
         }
         else if(look_at==1) // obstacle
         {
+            printf("  guard_pos (%d, %d)\n", guard_pos.x, guard_pos.y);
             guard_dir = turn_right(guard_dir);
-            if(turns<2)
+            if(turns<3)
             {
                 turns_positions[turns] = guard_pos;
-                printf("  turn_positions[%d] (%d, %d)\n", turns, guard_pos.x, guard_pos.x);
+                printf("  turn_positions[%d] (%d, %d)\n", turns, turns_positions[turns].x, turns_positions[turns].y);
             }
             else {
                 turns_positions[0] = turns_positions[1];
@@ -161,9 +167,15 @@ int evaluate(map m)
         }
 
         look_at = look_forward(m, guard_pos, guard_dir, marker);
+        iterations++;
     }
 
     path_cells = count_path_cells(m, marker);
+
+    printf("turns: %d\n", turns);
+    printf("path cells: %d\n", path_cells);
+    print_matrix(m.data, m.rows, m.cols);
+
 
     printf("loop options: %d\n", loop_options);
 
