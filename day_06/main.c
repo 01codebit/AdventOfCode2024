@@ -9,6 +9,7 @@ int main(int argc, char* argv[])
 {
     // defaults
     char* filename = "example.txt";
+    int debug = 0;
 
     if(argc>1)
     {
@@ -18,15 +19,22 @@ int main(int argc, char* argv[])
             return 0;
         }
         filename = argv[1];
+
+        if(argc>2)
+        {
+            debug = atoi(argv[2]);
+            printf("debug: %d\n", debug);
+        }
     }
 
     printf("read file: '%s'\n", filename);
     map m = read_map(filename);
     printf("read map with rows: %d x cols: %d\n", m.rows, m.cols);
 
-    int result = evaluate(m);
-    printf("guard path positions: %d\n", result);
-
+    result_struct result = evaluate(m, debug);
+    printf("\nresult:\n");
+    printf("guard path positions:\t%d\n", result.path_cells);
+    printf("loop options:\t\t%d\n", result.loop_options);
     printf("\n");
 
     return 0;

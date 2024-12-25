@@ -4,9 +4,17 @@
 
 #define CHUNK_SIZE 256
 
-#define GUARD '^'
-#define OBSTACLE  '#'
+#define GUARD       '^'
+#define OBSTACLE    '#'
 
+#define MARKER_X    '+'
+#define MARKER_V    '|'
+#define MARKER_H    '-'
+
+
+#define FREE        '.'
+
+#define MAX_TURNS 200 
 #define DEBUG 0
 
 typedef struct {

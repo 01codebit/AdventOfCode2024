@@ -2,4 +2,10 @@
 #include "data.h"
 #include "..\common\printer.h"
 
-int evaluate(map m);
+typedef struct {
+    int path_cells;
+    int loop_options;
+} result_struct;
+
+
+result_struct evaluate(map m, int debug);
