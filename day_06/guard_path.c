@@ -10,6 +10,7 @@ typedef struct {
     int y;
 } position;
 
+
 position go_forward(position start, direction d)
 {
     position result;
@@ -170,6 +171,34 @@ int check_for_loop_2(map m, position gp, direction gd)
     return result;
 }
 
+int check_for_loop_3(map m, position gp, direction gd, int debug)
+{
+    int result = 0;
+
+    //  2: free
+    //  3: marker +
+    //  4: marker -
+    //  5: marker |
+    int look_at_forward_1 = look_forward(m, gp, gd);
+    position next = go_forward(gp, gd);
+    int look_at_forward_2 = look_forward(m, next, gd);
+
+    if(look_at_forward_2>1)
+    {
+        if((look_at_forward_1==4 && gd.dx==0) || (look_at_forward_1==5 && gd.dy==0))
+        {
+            result = 1;
+        }
+    }
+
+    if(result && debug)
+    {
+        position obs = go_forward(next, gd);
+        print_matrix_marker(m.data, m.rows, m.cols, 'O', obs.x, obs.y);
+    }
+    return result;
+}
+
 void mark_current_position(char** data, position gp, direction gd, int* turn_flag, int prev_look_at)
 {
     // prev_look_at:
@@ -230,6 +259,7 @@ result_struct evaluate(map m, int debug)
         if(turns>2)
         {
             loop_options += check_for_loop(m, guard_pos, guard_dir, turns_positions, turns, turn_directions, debug);
+            // loop_options += check_for_loop_3(m, guard_pos, guard_dir, debug);
             // if(turn_flag==0) loop_options += check_for_loop_2(m, guard_pos, guard_dir);
             // if(look_at>2) // MARKER
             // {
