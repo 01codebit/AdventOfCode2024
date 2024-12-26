@@ -11,10 +11,11 @@
 #define MARKER_V    '|'
 #define MARKER_H    '-'
 
-
 #define FREE        '.'
 
 #define MAX_TURNS 200 
+#define MAX_PATH 200
+
 #define DEBUG 0
 
 typedef struct {

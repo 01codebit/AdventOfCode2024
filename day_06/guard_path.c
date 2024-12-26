@@ -10,6 +10,10 @@ typedef struct {
     int y;
 } position;
 
+typedef struct {
+    position pos;
+    direction dir;
+} path_cell;
 
 position go_forward(position start, direction d)
 {
@@ -226,13 +230,49 @@ void mark_current_position(char** data, position gp, direction gd, int* turn_fla
     data[gp.y][gp.x] = marker;
 }
 
+int ortho_dir(direction d1, direction d2)
+{
+    return ((d1.dx * d2.dx) + (d1.dy * d2.dy)) == 0;
+}
+
+int find_loops(path_cell* path, int path_cells_count)
+{
+    int result = 0;
+
+    for(int i=0; i<path_cells_count; i++)
+    {
+        path_cell current_cell = path[i];
+        for(int j=0; j<i; j++)
+        {
+            path_cell cell = path[j];
+
+            if(current_cell.pos.x == cell.pos.x && current_cell.pos.y == cell.pos.y)
+            {
+                if(ortho_dir(current_cell.dir, cell.dir))
+                {
+                    printf("loop: pos(%d, %d), dir(%d, %d)\n", cell.pos.x, cell.pos.y, cell.dir.dx, cell.dir.dy);
+                    result++;
+                }
+
+                // TODO controllare che la cella alla nostra destra sia stata già esplorata
+
+                if(current_cell.dir.dx == cell.dir.dx && current_cell.dir.dy == cell.dir.dy)
+                {
+                    printf("DEJA VU: pos(%d, %d), dir(%d, %d)\n", cell.pos.x, cell.pos.y, cell.dir.dx, cell.dir.dy);
+                }
+            }
+        }
+    }
+
+    return result;
+}
 
 
 result_struct evaluate(map m, int debug)
 {
     printf("guard starting position: (%d, %d)\n", m.guard_start_x, m.guard_start_y);
 
-    int path_cells = 0;
+    int path_cells_count = 0;
 
     position guard_pos;
     guard_pos.x = m.guard_start_x;
@@ -243,6 +283,8 @@ result_struct evaluate(map m, int debug)
     guard_dir.dy = -1;
 
     int turns = 0;
+
+    path_cell path[MAX_PATH];    
 
     position turns_positions[MAX_TURNS];
     direction turn_directions[MAX_TURNS];
@@ -272,7 +314,7 @@ result_struct evaluate(map m, int debug)
         {
             mark_current_position(m.data, guard_pos, guard_dir, &turn_flag, prev_look_at);
 
-            path_cells++;
+            path_cells_count++;
             if(DEBUG) print_matrix(m.data, m.rows, m.cols);
             break;
         }
@@ -301,7 +343,12 @@ result_struct evaluate(map m, int debug)
         {
             mark_current_position(m.data, guard_pos, guard_dir, &turn_flag, prev_look_at);
 
-            path_cells++;
+            path_cell new_path_cell;
+            new_path_cell.pos = guard_pos;
+            new_path_cell.dir = guard_dir;
+            path[path_cells_count] = new_path_cell;
+            path_cells_count++;
+
             guard_pos = go_forward(guard_pos, guard_dir);
             m.data[guard_pos.y][guard_pos.x] = GUARD;
 
@@ -313,18 +360,29 @@ result_struct evaluate(map m, int debug)
         iterations++;
     }
 
-    path_cells = count_path_cells(m);
+    path_cells_count = count_path_cells(m);
 
+    // m.data[6][3] = OBSTACLE;
     if(debug) 
     {
         printf("turns: %d\n", turns);
-        printf("path cells: %d\n", path_cells);
+        printf("path cells: %d\n", path_cells_count);
         print_matrix(m.data, m.rows, m.cols);
         printf("loop options: %d\n", loop_options);
     }
 
+    printf("\npath [%d]: ", path_cells_count);
+    for(int i=0; i<path_cells_count; i++)
+    {
+        printf("[pos(%d, %d), dir(%d, %d)] ", path[i].pos.x, path[i].pos.y, path[i].dir.dx, path[i].dir.dy);
+    }
+    printf("\n");
+
+    int loops = find_loops(path, path_cells_count);
+    printf("loops: %d\n", loops);
+
     result_struct res;
-    res.path_cells = path_cells;
+    res.path_cells = path_cells_count;
     res.loop_options = loop_options;
 
     return res;
