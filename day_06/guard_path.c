@@ -268,7 +268,7 @@ int find_loops(path_cell* path, int path_cells_count)
 }
 
 
-result_struct evaluate(map m, int debug)
+result_struct evaluate_with_loops(map m, int debug)
 {
     printf("guard starting position: (%d, %d)\n", m.guard_start_x, m.guard_start_y);
 
@@ -294,7 +294,8 @@ result_struct evaluate(map m, int debug)
     int look_at = look_forward(m, guard_pos, guard_dir);
     int prev_look_at = 0;
     int iterations = 0;
-    while(1)
+    int exit = 1;
+    while(exit)
     {
         // if(DEBUG) 
         // printf("[iteration #%d] guard pos (%d, %d) guard dir (%d, %d) look_at: %d, turns: %d, loop_options: %d\n", iterations, guard_pos.x, guard_pos.y, guard_dir.dx, guard_dir.dy, look_at, turns, loop_options);
@@ -355,6 +356,17 @@ result_struct evaluate(map m, int debug)
             if(DEBUG) print_matrix(m.data, m.rows, m.cols);
         }
         
+        for(int k=0; k<path_cells_count; k++)
+        {
+            path_cell cell = path[k];
+            if(guard_pos.x == cell.pos.x && guard_pos.y == cell.pos.y && guard_dir.dx == cell.dir.dx && guard_dir.dy == cell.dir.dy)
+            {
+                printf("DEJA VU: pos(%d, %d), dir(%d, %d)\n", cell.pos.x, cell.pos.y, cell.dir.dx, cell.dir.dy);
+                exit = 0;
+                break;
+            }
+        }
+
         prev_look_at = look_at;
         look_at = look_forward(m, guard_pos, guard_dir);
         iterations++;
@@ -378,6 +390,7 @@ result_struct evaluate(map m, int debug)
     }
     printf("\n");
 
+
     int loops = find_loops(path, path_cells_count);
     printf("loops: %d\n", loops);
 
@@ -386,4 +399,170 @@ result_struct evaluate(map m, int debug)
     res.loop_options = loop_options;
 
     return res;
+}
+
+
+int evaluate(map m, int max_iterations, int debug)
+{
+    int path_cells_count = 0;
+
+    position guard_pos;
+    guard_pos.x = m.guard_start_x;
+    guard_pos.y = m.guard_start_y;
+
+    direction guard_dir;
+    guard_dir.dx = 0;
+    guard_dir.dy = -1;
+
+    int turns = 0;
+
+    path_cell path[MAX_PATH];    
+
+    position turns_positions[MAX_TURNS];
+    direction turn_directions[MAX_TURNS];
+    int turn_flag = 0;
+
+    int look_at = look_forward(m, guard_pos, guard_dir);
+    int prev_look_at = 0;
+    int iterations = 0;
+
+    while(1)
+    {
+        // if(DEBUG) 
+        // printf("[iteration #%d] guard pos (%d, %d) guard dir (%d, %d) look_at: %d, turns: %d, loop_options: %d\n", iterations, guard_pos.x, guard_pos.y, guard_dir.dx, guard_dir.dy, look_at, turns, loop_options);
+
+        if(look_at==0) // exit
+        {
+            mark_current_position(m.data, guard_pos, guard_dir, &turn_flag, prev_look_at);
+
+            path_cells_count++;
+            if(DEBUG) print_matrix(m.data, m.rows, m.cols);
+            break;
+        }
+        else if(look_at==1) // obstacle
+        {
+            if(DEBUG) printf("  guard_pos (%d, %d)\n", guard_pos.x, guard_pos.y);
+
+            turn_directions[turns] = guard_dir;
+            guard_dir = turn_right(guard_dir);
+            turn_flag = 1;
+            if(turns<MAX_TURNS)
+            {
+                turns_positions[turns] = guard_pos;
+                if(DEBUG) printf("  turn_positions[%d] (%d, %d)\n", turns, turns_positions[turns].x, turns_positions[turns].y);
+            }
+            else {
+                for(int i=1; i<MAX_TURNS; i++)
+                {
+                    turns_positions[i-1] = turns_positions[i];
+                }
+                turns_positions[MAX_TURNS-1] = guard_pos;
+            }
+            turns++;
+        }
+        else if(look_at>=2) // free or marker
+        {
+            mark_current_position(m.data, guard_pos, guard_dir, &turn_flag, prev_look_at);
+
+            path_cell new_path_cell;
+            new_path_cell.pos = guard_pos;
+            new_path_cell.dir = guard_dir;
+            path[path_cells_count] = new_path_cell;
+            path_cells_count++;
+
+            guard_pos = go_forward(guard_pos, guard_dir);
+            m.data[guard_pos.y][guard_pos.x] = GUARD;
+
+            if(DEBUG) print_matrix(m.data, m.rows, m.cols);
+        }
+        
+        for(int k=0; k<path_cells_count; k++)
+        {
+            path_cell cell = path[k];
+            if(guard_pos.x == cell.pos.x && guard_pos.y == cell.pos.y && guard_dir.dx == cell.dir.dx && guard_dir.dy == cell.dir.dy)
+            {
+                printf("LOOP ALERT: pos(%d, %d), dir(%d, %d)\n", cell.pos.x, cell.pos.y, cell.dir.dx, cell.dir.dy);
+                return -1;
+            }
+        }
+
+        prev_look_at = look_at;
+        look_at = look_forward(m, guard_pos, guard_dir);
+        iterations++;
+
+        if(iterations>max_iterations) break;
+    }
+
+    path_cells_count = count_path_cells(m);
+
+    // m.data[6][3] = OBSTACLE;
+    if(debug) 
+    {
+        printf("turns: %d\n", turns);
+        printf("path cells: %d\n", path_cells_count);
+        print_matrix(m.data, m.rows, m.cols);
+
+        printf("\npath [%d]: ", path_cells_count);
+        for(int i=0; i<path_cells_count; i++)
+        {
+            printf("[pos(%d, %d), dir(%d, %d)] ", path[i].pos.x, path[i].pos.y, path[i].dir.dx, path[i].dir.dy);
+        }
+        printf("\n");
+    }
+
+    return path_cells_count;
+}
+
+
+void reset_map(map m)
+{
+    for(int y=0; y<m.rows; y++)
+    {
+        for(int x=0; x<m.cols; x++)
+        {
+            if(x==m.guard_start_x && y==m.guard_start_y)
+            {
+                m.data[y][x] = GUARD;
+            }
+            else
+            {
+                char ch = m.data[y][x];
+                if(ch!=OBSTACLE && ch!=FREE && ch!=GUARD)
+                {
+                    m.data[y][x] = FREE;
+                }
+            }
+        }
+    }
+}
+
+
+int brute_force_loops_search(map m, int max_iterations, int debug)
+{
+    printf("\nstarting brute force loops search...\n\n");
+    int result = 0;
+
+    for(int y=0; y<m.rows; y++)
+    {
+        for(int x=0; x<m.cols; x++)
+        {
+            char current_cell = m.data[y][x];
+            if(m.data[y][x]==FREE)
+            {
+                m.data[y][x] = OBSTACLE;
+
+                printf("evaluate with obstacle in (%d, %d): ", x, y);
+                int go = evaluate(m, max_iterations, 0);
+                printf("%d\n", go);
+
+                if(go<0) result++;
+                m.data[y][x] = FREE;
+            }
+
+            print_matrix(m.data, m.rows, m.cols);
+            reset_map(m);
+        }
+    }
+
+    return result;
 }
