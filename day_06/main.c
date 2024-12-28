@@ -39,11 +39,11 @@ int main(int argc, char* argv[])
     printf("\n");
 */
 
-    int path_cells = evaluate(m, 100, debug);
+    int path_cells = evaluate(m, MAX_ITERATIONS, debug);
 
     reset_map(m);
 
-    int loops = brute_force_loops_search(m, 100, debug);
+    int loops = brute_force_loops_search(m, MAX_ITERATIONS, debug);
 
     printf("\nresult:\n");
     printf("guard path positions:\t\t%d\n", path_cells);

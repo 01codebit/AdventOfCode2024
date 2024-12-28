@@ -13,8 +13,9 @@
 
 #define FREE        '.'
 
-#define MAX_TURNS 200 
-#define MAX_PATH 200
+#define MAX_TURNS 10000 
+#define MAX_PATH 10000
+#define MAX_ITERATIONS 10000
 
 #define DEBUG 0
 

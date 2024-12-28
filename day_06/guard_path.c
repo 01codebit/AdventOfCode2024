@@ -481,7 +481,7 @@ int evaluate(map m, int max_iterations, int debug)
             path_cell cell = path[k];
             if(guard_pos.x == cell.pos.x && guard_pos.y == cell.pos.y && guard_dir.dx == cell.dir.dx && guard_dir.dy == cell.dir.dy)
             {
-                printf("LOOP ALERT: pos(%d, %d), dir(%d, %d)\n", cell.pos.x, cell.pos.y, cell.dir.dx, cell.dir.dy);
+                //printf("LOOP ALERT: pos(%d, %d), dir(%d, %d)\n", cell.pos.x, cell.pos.y, cell.dir.dx, cell.dir.dy);
                 return -1;
             }
         }
@@ -527,7 +527,7 @@ void reset_map(map m)
             else
             {
                 char ch = m.data[y][x];
-                if(ch!=OBSTACLE && ch!=FREE && ch!=GUARD)
+                if(ch!=OBSTACLE)
                 {
                     m.data[y][x] = FREE;
                 }
@@ -539,7 +539,7 @@ void reset_map(map m)
 
 int brute_force_loops_search(map m, int max_iterations, int debug)
 {
-    printf("\nstarting brute force loops search...\n\n");
+    printf("\nstarting brute force loops search...\n");
     int result = 0;
 
     for(int y=0; y<m.rows; y++)
@@ -551,15 +551,21 @@ int brute_force_loops_search(map m, int max_iterations, int debug)
             {
                 m.data[y][x] = OBSTACLE;
 
-                printf("evaluate with obstacle in (%d, %d): ", x, y);
+                if(debug) printf("evaluate with obstacle in (%d, %d): ", x, y);
                 int go = evaluate(m, max_iterations, 0);
-                printf("%d\n", go);
+                if(go>0)
+                {
+                    if(debug) printf("%d\n", go);
+                }
+                else 
+                {
+                    result++;
+                    if(debug) printf("LOOP #%d\n", result);
+                }
 
-                if(go<0) result++;
                 m.data[y][x] = FREE;
             }
 
-            print_matrix(m.data, m.rows, m.cols);
             reset_map(m);
         }
     }
