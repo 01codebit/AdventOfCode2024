@@ -10,8 +10,8 @@
 #define MAX_NUMBERS 200
 
 typedef struct {
-    int total;
-    int* numbers;
+    long long total;
+    long long* numbers;
     int count;
 } calibration;
 

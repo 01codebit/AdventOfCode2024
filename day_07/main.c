@@ -3,6 +3,7 @@
 
 #include "../common/printer.h"
 #include "file_reader.h"
+#include "computing.h"
 
 int main(int argc, char *argv[])
 {
@@ -36,16 +37,17 @@ int main(int argc, char *argv[])
         printf("\ncalibrations:\n");
         for (int i = 0; i < m.count; i++)
         {
-            printf("%d: (%d) ", m.data[i].total, m.data[i].count);
+            printf("%lld: (%d) ", m.data[i].total, m.data[i].count);
             for (int j = 0; j < m.data[i].count; j++)
             {
-                printf("%d ", m.data[i].numbers[j]);
+                printf("%lld ", m.data[i].numbers[j]);
             }
             printf("\n");
         }
     }
-    // printf("\nresult:\n");
-    // printf("result:\t\t%d\n", result);
+
+    long long result = total_calibration_result(m, debug);
+    printf("\ntotal calibration result: %ld\n", result);
     printf("\n");
 
     return 0;
