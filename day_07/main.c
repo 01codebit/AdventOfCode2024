@@ -34,20 +34,21 @@ int main(int argc, char *argv[])
 
     if (debug)
     {
-        printf("\ncalibrations:\n");
+        printf("\ncalibrations: --------------------------------------------------\n");
         for (int i = 0; i < m.count; i++)
         {
-            printf("%lld: (%d) ", m.data[i].total, m.data[i].count);
+            printf("[%d] %lld: (%d) ", i, m.data[i].total, m.data[i].count);
             for (int j = 0; j < m.data[i].count; j++)
             {
                 printf("%lld ", m.data[i].numbers[j]);
             }
             printf("\n");
         }
+        printf("----------------------------------------------------------------\n\n");
     }
 
     long long result = total_calibration_result(m, debug);
-    printf("\ntotal calibration result: %ld\n", result);
+    printf("\ntotal calibration result: %lld\n", result);
     printf("\n");
 
     return 0;
