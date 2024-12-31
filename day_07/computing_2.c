@@ -1,18 +1,25 @@
-#include "computing.h"
-#include <math.h>
+#include "computing_2.h"
 
-long long apply_operation(int type, long long a, long long b)
+long long apply_operation_3(int type, long long a, long long b)
 {
     long long result = 0;
     if (type == 0)
     {
         result = a + b;
         // printf("operation: %d + %d = %d\n", a, b, result);
+        printf("+ ");
     }
     else if (type == 1)
     {
         result = a * b;
         // printf("operation: %d * %d = %d\n", a, b, result);
+        printf("* ");
+    }
+    else if (type == 2)
+    {
+        result = concatenation(a, b);
+        // printf("operation: %d || %d = %d\n", a, b, result);
+        printf("|| ");
     }
     else
     {
@@ -22,31 +29,35 @@ long long apply_operation(int type, long long a, long long b)
     return result;
 }
 
-long long calibration_result(long long *numbers, long long total, int count, int debug)
+long long calibration_result_2(long long *numbers, long long total, int count, int debug)
 {
     long long result = 0;
-    int op_combinations = power_of_two(count - 1);
-    // printf("op_combinations: %d\n", op_combinations);
+    int op_combinations = power_of_three(count - 1);
+    printf("op_combinations: 3^%d = %d\n", count - 1, op_combinations);
 
     for (int comb = 0; comb < op_combinations; comb++)
     {
         long long prev = numbers[0];
+        printf("comb #%d/%d: ", comb, op_combinations);
         for (int i = 1; i < count; i++)
         {
-            int k = comb >> (i - 1);
-            int op_type = k & 1;
+            int op_type = op_combination(i, comb, 3, op_combinations);
+
             if (debug)
             {
-                // printf("[%d: %d] ", (i-1), op_type);
+                printf("[%d: %d] ", (i-1), op_type);
                 //  printf("%d", op_type);
             }
-            long long op_res = apply_operation(op_type, prev, numbers[i]);
+            printf("%lld ", prev);
+            long long op_res = apply_operation_3(op_type, prev, numbers[i]);
+            printf("%lld ", numbers[i]);
             prev = op_res;
             if (prev > total)
             {
                 break;
             }
         }
+        printf("= %lld (total: %lld)\n", prev, total);
         // if(debug) printf("\n");
         // printf("total? %lld =? %lld\n", prev, total);
         // printf("total is %lld, computed value for combination #%d is %lld\n", total, comb, prev);
@@ -59,7 +70,7 @@ long long calibration_result(long long *numbers, long long total, int count, int
     return result;
 }
 
-long long total_calibration_result(calibrations c, int debug)
+long long total_calibration_result_2(calibrations c, int debug)
 {
     long long result = 0;
 
@@ -68,8 +79,9 @@ long long total_calibration_result(calibrations c, int debug)
         long long total = c.data[i].total;
         int count = c.data[i].count;
 
-        long long r = calibration_result(c.data[i].numbers, total, count, debug);
-        if (debug && (r > 0)) printf("calibration #%d result: %lld\n", i, r);
+        long long r = calibration_result_2(c.data[i].numbers, total, count, debug);
+        if (debug && (r > 0))
+            printf("calibration #%d result: %lld\n", i, r);
 
         result += r;
     }

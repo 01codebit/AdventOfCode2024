@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include "..\utility.h"
 
-int test()
+int main()
 {
     char* x = "24908498259";
     char* endptr;
@@ -28,6 +29,21 @@ int test()
     }
 
     printf("\ntoken: %s -> value: %lld\n\n", x, y);
+
+    long long a = 123;
+    long long b = 456;
+
+    long long r = concatenation(a, b);
+    printf("\nconcatenation: %lld || %lld = %lld\n", a, b, r);
+
+
+    printf("\n");
+    for(int pos=2; pos>=0; pos--)
+    {
+        int op = op_combination(pos, 9, 3, 2);
+        printf("pos: %d - op_combination: %d\n", pos, op);
+    }
+    printf("\n");
 
 
     return EXIT_SUCCESS;

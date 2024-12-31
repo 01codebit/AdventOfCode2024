@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "../common/printer.h"
-#include "file_reader.h"
-#include "computing.h"
+#include "main.h"
 
 int main(int argc, char *argv[])
 {
@@ -49,6 +44,10 @@ int main(int argc, char *argv[])
 
     long long result = total_calibration_result(m, debug);
     printf("\ntotal calibration result: %lld\n", result);
+    printf("\n");
+
+    long long result2 = total_calibration_result_2(m, debug);
+    printf("\ntotal calibration result with concatenation: %lld\n", result2);
     printf("\n");
 
     return 0;

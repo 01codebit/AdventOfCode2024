@@ -1,32 +1,5 @@
 #include "file_reader.h"
 
-long long convert(char *str)
-{
-    char* endptr;
-    // Convert the string to a long integer
-    long long num = strtoll(str, &endptr, 10);
-    if (endptr == str)
-    {
-        printf("No digits were found.\n");
-    }
-    else if (*endptr != '\0')
-    {
-        printf("Invalid character: %c\n", *endptr);
-    }
-    // else
-    // {
-    //     printf("The number is: %ld\n", num);
-    // }
-    else if (num == LLONG_MIN || num == LLONG_MAX)
-    {
-        /* If the value provided was out of range, display a warning message */
-        if (errno == ERANGE)
-            printf("The value provided was out of range\n");
-    }
-
-    return num;
-}
-
 calibrations read_calibrations(char *filename)
 {
     FILE *input = fopen(filename, "r");
