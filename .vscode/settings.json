@@ -5,6 +5,7 @@
         "stdlib.h": "c",
         "limits.h": "c",
         "stdio.h": "c",
-        "guard_path.h": "c"
+        "guard_path.h": "c",
+        "utility.h": "c"
     }
 }

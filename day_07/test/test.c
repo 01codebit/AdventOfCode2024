@@ -3,46 +3,39 @@
 #include <errno.h>
 #include "..\utility.h"
 
-int main()
+int main(int argc, char** argv)
 {
-    char* x = "24908498259";
-    char* endptr;
-
-    long long y = strtoll(x, &endptr, 10);
-    if (endptr == x)
+    int input = 0;
+    if(argc==2)
     {
-        printf("No digits were found.\n");
+        char* arg = argv[1];
+        input = atoi(arg);
     }
-    else if (*endptr != '\0')
-    {
-        printf("Invalid character: %c\n", *endptr);
-    }
-    // else
-    // {
-    //     printf("The number is: %ld\n", num);
-    // }
-    else if (y == LLONG_MIN || y == LLONG_MAX)
-    {
-        /* If the value provided was out of range, display a warning message */
-        if (errno == ERANGE)
-            printf("The value provided was out of range\n");
-    }
-
-    printf("\ntoken: %s -> value: %lld\n\n", x, y);
-
-    long long a = 123;
-    long long b = 456;
-
-    long long r = concatenation(a, b);
-    printf("\nconcatenation: %lld || %lld = %lld\n", a, b, r);
-
 
     printf("\n");
-    for(int pos=2; pos>=0; pos--)
+    int combination_number = input>0 ? input : 9;
+    int max_positions = 8;
+    int base = 3;
+    printf("number: %d\n\n", combination_number);
+    printf("max number: %d^%d = %lld\n\n", base, max_positions, power_of_three(max_positions));
+
+    for(int pos=max_positions-1; pos>=0; pos--)
     {
-        int op = op_combination(pos, 9, 3, 2);
-        printf("pos: %d - op_combination: %d\n", pos, op);
+        int op = op_combination(pos, combination_number, base, max_positions);
+        int x = power_of_three(pos) * op;
+        printf("%2d", op);
     }
+    printf("\n\n");
+
+    int result = 0;
+    for(int pos=max_positions-1; pos>=0; pos--)
+    {
+        int op = op_combination(pos, combination_number, base, max_positions);
+        int x = power_of_three(pos) * op;
+        result += x;
+        printf("[%2d] op_combination: %d * %d^%d = %d\n", pos, op, base, pos, x);
+    }
+    printf("\nresult: %d\n", result);
     printf("\n");
 
 

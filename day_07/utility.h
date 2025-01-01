@@ -8,7 +8,7 @@
 
 int power_of_two(int num);
 
-int power_of_three(int num);
+long long power_of_three(int num);
 
 long long convert(char *str);
 

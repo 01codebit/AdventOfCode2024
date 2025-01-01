@@ -6,9 +6,9 @@ int power_of_two(int num)
     return result;
 }
 
-int power_of_three(int num)
+long long power_of_three(int num)
 {
-    int result = (int)pow(3, num);
+    long long result = (long long)pow(3, num);
     return result;
 }
 
@@ -50,6 +50,7 @@ long long concatenation(long long a, long long b)
 
 int op_combination(int position, int combination, int base, int max_position)
 {
+    // printf("\nop_combination(position: %d, combination: %d, base: %d, max_position: %d) result: ", position, combination, base, max_position);
     int result;
     int app = combination;
     for(int i=max_position; i>=position; i--)
@@ -60,6 +61,11 @@ int op_combination(int position, int combination, int base, int max_position)
             app -= current;
             if(i==position) result++;
         }
+    }
+    // printf("%d\n", result);
+    if(result>base)
+    {
+        printf("\n*** ERROR ***: result > base !!! : op_combination(position: %d, combination: %d, base: %d, max_position: %d) result: %d", position, combination, base, max_position, result);
     }
     return result;
 }
