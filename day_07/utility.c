@@ -51,7 +51,7 @@ long long concatenation(long long a, long long b)
 int op_combination(int position, int combination, int base, int max_position)
 {
     // printf("\nop_combination(position: %d, combination: %d, base: %d, max_position: %d) result: ", position, combination, base, max_position);
-    int result;
+    int result = 0;
     int app = combination;
     for(int i=max_position; i>=position; i--)
     {
@@ -63,9 +63,10 @@ int op_combination(int position, int combination, int base, int max_position)
         }
     }
     // printf("%d\n", result);
-    if(result>base)
+    if(result>=base)
     {
-        printf("\n*** ERROR ***: result > base !!! : op_combination(position: %d, combination: %d, base: %d, max_position: %d) result: %d", position, combination, base, max_position, result);
+        // printf("\n*** ERROR ***: result > base !!! : op_combination(position: %d, combination: %d, base: %d, max_position: %d) result: %d\n", position, combination, base, max_position, result);
+        // result = base-1;
     }
     return result;
 }
