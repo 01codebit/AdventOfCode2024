@@ -16,6 +16,11 @@ typedef struct {
 } antenna;
 
 typedef struct {
+    antenna* list;
+    int count;
+} antennas;
+
+typedef struct {
     char frequency;
     int x;
     int y;

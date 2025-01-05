@@ -29,6 +29,15 @@ int main(int argc, char *argv[])
 
     print_matrix(m.data, m.rows, m.cols);
 
+    antennas atns = parse_map(m, debug);
+
+    printf("\nantennas (%d):\n", atns.count);
+    for(int k=0; k<atns.count; k++)
+    {
+        antenna a = atns.list[k];
+        printf("antenna: %c (%d, %d)\n", a.frequency, a.x, a.y);
+    }
+
     // TODO computation
 
     printf("\n");
