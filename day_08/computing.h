@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "data.h"
 #include "utility.h"
 
-int antinodes_count(map m, int debug);
+antinodes antinodes_count(map m, antennas atns, int debug);

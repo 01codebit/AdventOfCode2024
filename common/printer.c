@@ -44,3 +44,31 @@ void print_matrix_marker(char** data, int rows, int cols, char marker, int marke
     }
     printf("\n");
 }
+
+void print_matrix_markers(char** data, int rows, int cols, char marker, int* marker_x, int* marker_y, int markers_count)
+{
+    printf("\n");
+    for(int r=0; r<rows; r++)
+    {
+        for(int c=0; c<cols; c++)
+        {
+            int found = 0;
+            for(int k=0; k<markers_count; k++)
+            {
+                if(r==marker_y[k] && c==marker_x[k])
+                {
+                    printf("%c ", marker);
+                    found = 1;
+                    break;
+                }
+            }
+            
+            if(!found)
+            {
+                printf("%c ", data[r][c]);
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
