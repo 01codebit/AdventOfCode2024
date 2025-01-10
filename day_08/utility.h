@@ -11,4 +11,6 @@ int sigma(int max);
 
 antinode find_antinode(antenna start, antenna end);
 
+antinode find_n_antinode(antenna start, antenna end, int n);
+
 #endif

@@ -45,9 +45,10 @@ void print_matrix_marker(char** data, int rows, int cols, char marker, int marke
     printf("\n");
 }
 
-void print_matrix_markers(char** data, int rows, int cols, char marker, int* marker_x, int* marker_y, int markers_count)
+int print_matrix_markers(char** data, int rows, int cols, char marker, int* marker_x, int* marker_y, int markers_count)
 {
     printf("\n");
+    int unique_count = 0;
     for(int r=0; r<rows; r++)
     {
         for(int c=0; c<cols; c++)
@@ -59,6 +60,7 @@ void print_matrix_markers(char** data, int rows, int cols, char marker, int* mar
                 {
                     printf("%c ", marker);
                     found = 1;
+                    unique_count++;
                     break;
                 }
             }
@@ -71,4 +73,6 @@ void print_matrix_markers(char** data, int rows, int cols, char marker, int* mar
         printf("\n");
     }
     printf("\n");
+
+    return unique_count;
 }

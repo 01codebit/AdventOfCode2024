@@ -25,3 +25,21 @@ antinode find_antinode(antenna start, antenna end)
 
     return an;
 }
+
+antinode find_n_antinode(antenna start, antenna end, int n)
+{
+    int dx = end.x - start.x;
+    int dy = end.y - start.y;
+
+    int nx = end.x + n*dx;
+    int ny = end.y + n*dy;
+
+    antinode an;
+    an.frequency = end.frequency;
+    an.x = nx;
+    an.y = ny;
+
+    // printf("new antinode: %c (%d, %d)\n", an.frequency, an.x, an.y);
+
+    return an;
+}

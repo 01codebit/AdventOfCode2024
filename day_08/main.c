@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
     antennas atns = parse_map(m, debug);
     printf("\nfound %d antennas\n", atns.count);
 
-    char frequencies[1024];
-    int counts[1024];
+    char frequencies[CHUNK_SIZE];
+    int counts[CHUNK_SIZE];
     int groups = 0;
     for (int k = 0; k < atns.count; k++)
     {
@@ -85,13 +85,15 @@ int main(int argc, char *argv[])
     }
     printf("total combinations: %d\n", total_combinations);
 
-    antinodes ans = antinodes_count(m, atns, debug);
+    // antinodes ans = antinodes_count(m, atns, debug);
+    antinodes ans = antinodes_count_2(m, atns, debug);
+
     printf("\nantinodes count: %d\n", ans.count);
 
     if (debug)
     {
-        int anodes[1024];
-        for (int i = 0; i < 1024; i++)
+        int anodes[CHUNK_SIZE];
+        for (int i = 0; i < CHUNK_SIZE; i++)
             anodes[i] = 0;
         for (int k = 0; k < ans.count; k++)
         {
@@ -116,18 +118,21 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (debug)
-    {
-        int ans_x[1024];
-        int ans_y[1024];
+    // if (debug)
+    // {
+        int ans_x[CHUNK_SIZE];
+        int ans_y[CHUNK_SIZE];
         for (int i = 0; i < ans.count; i++)
         {
             ans_x[i] = ans.list[i].x;
             ans_y[i] = ans.list[i].y;
         }
 
-        print_matrix_markers(m.data, m.rows, m.cols, '#', ans_x, ans_y, ans.count);
-    }
+        int sol = print_matrix_markers(m.data, m.rows, m.cols, '#', ans_x, ans_y, ans.count);
+    // }
+
+    printf("unique count: %d\n", sol);
+
 
     printf("\n");
     return 0;
