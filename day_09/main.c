@@ -38,18 +38,43 @@ int main(int argc, char *argv[])
         printf("\n");
     }
 
-    char *ex = expand_disk_map(m);
-    printf("expansion length: %d\n", strlen(ex));
+    // char *ex = expand_disk_map(m);
+    expansion ex = expand_disk_map(m);
+    printf("expansion length: %d\n", ex.length);
     if (debug)
-        printf("expansion: %s\n", ex);
+    {
+        printf("expansion:\n");
+        for (int i = 0; i < ex.length; i++)
+        {
+            printf(" %d", ex.locations[i]);
+        }
+        printf("\n");
+    }
 
     arrange_expansion(ex);
     if (debug)
-        printf("arranged expansion: %s\n", ex);
+    {
+        printf("expansion:\n");
+        for (int i = 0; i < ex.length; i++)
+        {
+            printf(" %d", ex.locations[i]);
+        }
+        printf("\n");
+    }
 
-    long int checksum = compute_checksum(ex);
-    printf("checksum: %ld\n", checksum);
 
+    long long int checksum = compute_checksum(ex);
+    printf("checksum: %lld\n", checksum);
+    printf("LLONG_MAX: %lld\n", LLONG_MAX);
+
+    char dummy[255];
+    int normalInt = 5;
+    printf("My number is %d bytes wide and its value is %s. A normal number is %d.\n", sizeof(checksum), lltoa(checksum, dummy, 10), normalInt);
     printf("\n");
+
+    // free used memory
+    free(ex.locations);
+    free(m.map);
+
     return 0;
 }

@@ -4,8 +4,8 @@
 #include <math.h>
 #include "data.h"
 
-char *expand_disk_map(disk_map m);
+expansion expand_disk_map(disk_map m);
 
-void arrange_expansion(char* ex);
+void arrange_expansion(expansion ex);
 
-long int compute_checksum(char* ex);
+long long int compute_checksum(expansion ex);
