@@ -4,6 +4,8 @@
 
 #define CHUNK_SIZE 256
 
+#define ULLONG long long
+
 typedef struct
 {
     int *map;
@@ -12,8 +14,9 @@ typedef struct
 
 typedef struct
 {
-    long long int *locations;
+    ULLONG *locations;
     int length;
+    ULLONG max_file_id;
 } expansion;
 
 #endif

@@ -24,13 +24,12 @@ int main(int argc, char *argv[])
         }
     }
 
-    printf("read file: '%s'\n", filename);
+    printf("[main] read file: '%s'\n", filename);
 
     disk_map m = read_disk_map(filename);
-    printf("\nread disk map len: %d\n", m.length);
     if (debug)
     {
-        printf("\nread disk map:");
+        printf("[main] read disk map (length: %d):\n", m.length);
         for (int i = 0; i < m.length; i++)
         {
             printf(" %d", m.map[i]);
@@ -40,10 +39,9 @@ int main(int argc, char *argv[])
 
     // char *ex = expand_disk_map(m);
     expansion ex = expand_disk_map(m);
-    printf("expansion length: %d\n", ex.length);
     if (debug)
     {
-        printf("expansion:\n");
+        printf("[main] expansion (length: %d):\n", ex.length);
         for (int i = 0; i < ex.length; i++)
         {
             printf(" %d", ex.locations[i]);
@@ -54,7 +52,7 @@ int main(int argc, char *argv[])
     arrange_expansion(ex);
     if (debug)
     {
-        printf("expansion:\n");
+        printf("[main] arranged expansion (length: %d):\n", ex.length);
         for (int i = 0; i < ex.length; i++)
         {
             printf(" %d", ex.locations[i]);
@@ -62,14 +60,13 @@ int main(int argc, char *argv[])
         printf("\n");
     }
 
+    ULLONG checksum = compute_checksum(ex);
+    printf("\n[main] checksum: %lld\n", checksum);
+    // printf("LLONG_MAX: %lld\n", LLONG_MAX);
 
-    long long int checksum = compute_checksum(ex);
-    printf("checksum: %lld\n", checksum);
-    printf("LLONG_MAX: %lld\n", LLONG_MAX);
-
-    char dummy[255];
-    int normalInt = 5;
-    printf("My number is %d bytes wide and its value is %s. A normal number is %d.\n", sizeof(checksum), lltoa(checksum, dummy, 10), normalInt);
+    // char dummy[255];
+    // int normalInt = 5;
+    // printf("My number is %d bytes wide and its value is %s. A normal number is %d.\n", sizeof(checksum), lltoa(checksum, dummy, 10), normalInt);
     printf("\n");
 
     // free used memory

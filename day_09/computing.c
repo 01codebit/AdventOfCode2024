@@ -3,21 +3,21 @@
 expansion expand_disk_map(disk_map m)
 {
     int chunks = 1;
-    printf("[expand_disk_map] Try to allocate %zu bytes for string\n", CHUNK_SIZE);
+    // printf("[expand_disk_map] Try to allocate %zu bytes for locations array\n", CHUNK_SIZE);
 
     int chunks_fids = 1;
-    long long int *file_ids = (long long int *)malloc(CHUNK_SIZE * chunks_fids * sizeof(long long int));
+    ULLONG *file_ids = (ULLONG *)malloc(CHUNK_SIZE * chunks_fids * sizeof(ULLONG));
     if (file_ids == NULL)
     {
-        printf("[expand_disk_map] Cannot allocate %zu bytes for string\n", CHUNK_SIZE);
+        printf("[expand_disk_map] Cannot allocate %zu bytes for locations array\n", CHUNK_SIZE);
         exit(EXIT_FAILURE);
     }
 
     int file_or_space = 0;
-    long long int file_id = 0;
+    ULLONG file_id = 0;
 
     int len = 0;
-
+    printf("[expand_disk_map] scan %d values\n", m.length);
     for (int i = 0; i < m.length; i++)
     {
         int current = m.map[i];
@@ -25,7 +25,7 @@ expansion expand_disk_map(disk_map m)
         if ((len + current) > (CHUNK_SIZE * chunks_fids))
         {
             chunks_fids++;
-            file_ids = (long long int *)realloc(file_ids, chunks_fids * CHUNK_SIZE * sizeof(long long int));
+            file_ids = (ULLONG *)realloc(file_ids, chunks_fids * CHUNK_SIZE * sizeof(ULLONG));
             // printf("[expand_disk_map] Try to reallocate %zu bytes for file_ids\n", CHUNK_SIZE * chunks_fids);
             if (file_ids == NULL)
             {
@@ -47,6 +47,7 @@ expansion expand_disk_map(disk_map m)
         }
         else if (file_or_space == 1)
         {
+            // printf("set -1 for %d locations starting from %d\n", current, len);
             for (int k = 0; k < current; k++)
             {
                 file_ids[len + k] = -1;
@@ -57,15 +58,15 @@ expansion expand_disk_map(disk_map m)
         len += current;
     }
 
-    printf("[expand_disk_map] result length: %u, max file_id: %lld\n", len, file_id-1);
+    printf("[expand_disk_map] result length: %d, max file_id: %lld\n", len, file_id - 1);
 
     expansion ex;
     ex.locations = file_ids;
     ex.length = len;
+    ex.max_file_id = file_id - 1;
 
     return ex;
 }
-
 
 int first_free_index(expansion e)
 {
@@ -80,8 +81,8 @@ int first_free_index(expansion e)
 
 int last_used_index(expansion e)
 {
-    int i = e.length-1;
-    for (i = e.length-1; i > 0; i--)
+    int i = e.length - 1;
+    for (i = e.length - 1; i > 0; i--)
     {
         if (e.locations[i] > -1)
             break;
@@ -106,16 +107,29 @@ void arrange_expansion(expansion ex)
     }
 }
 
-long long int compute_checksum(expansion ex)
+ULLONG compute_checksum(expansion ex)
 {
-    long long int res = 0L;
+    ULLONG res = 0;
 
-    int free_index = first_free_index(ex);
+    ULLONG free_index = first_free_index(ex);
+    ULLONG last_index = last_used_index(ex);
 
-    for (int i = 0L; i < free_index; i++)
-    {        
-        res += ex.locations[i] * (long long int)i;
+    ULLONG max = 0;
+    for (ULLONG i = 0; i < free_index; i++)
+    {
+        if (ex.locations[i] > max)
+            max = ex.locations[i];
+        // if (ex.locations[i] == ex.max_file_id)
+        //     printf("[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, free_index, res, ex.locations[i], i, ex.locations[i] * i);
+
+        if (ex.locations[i] < 0)
+           printf("[compute_checksum] ERROR in %lld value: %lld\n", i, ex.locations[i]);
+
+        res += ex.locations[i] * i;
     }
+
+    if(max != ex.max_file_id)
+        printf("[compute_checksum] ERROR found max file id %lld: must be %lld\n", max, ex.max_file_id);
 
     return res;
 }

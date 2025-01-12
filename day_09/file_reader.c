@@ -19,7 +19,7 @@ disk_map read_disk_map(char *filename)
     if (input)
     {
         ch = fgetc(input);
-        while (ch != EOF)
+        while (ch != EOF && ch != '\n')
         {
             int x = ch - '0';
 
