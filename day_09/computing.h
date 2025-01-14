@@ -6,6 +6,6 @@
 
 expansion expand_disk_map(disk_map m);
 
-void arrange_expansion(expansion ex);
+ULLONG arrange_expansion(expansion ex);
 
 ULLONG compute_checksum(expansion ex);

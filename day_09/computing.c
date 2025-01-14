@@ -90,21 +90,37 @@ int last_used_index(expansion e)
     return i;
 }
 
-void arrange_expansion(expansion ex)
+ULLONG arrange_expansion(expansion ex)
 {
-    int free_index = first_free_index(ex);
-    int last_index = last_used_index(ex);
+    ULLONG checksum = 0;
+    // int free_index = first_free_index(ex);
+    // int last_index = last_used_index(ex);
 
-    while (free_index < last_index)
+    // while (free_index < last_index)
+    // {
+    //     ex.locations[free_index] = ex.locations[last_index];
+    //     ex.locations[last_index] = -1;
+
+    //     free_index = first_free_index(ex);
+    //     last_index = last_used_index(ex);
+    // }
+
+    for(int i=0; i<ex.length; i++)
     {
-        ex.locations[free_index] = ex.locations[last_index];
-        ex.locations[last_index] = -1;
-
-        free_index = first_free_index(ex);
-        last_index = last_used_index(ex);
-
-        // printf("ex: %s\n", ex);
+        if(ex.locations[i] < 0)
+        {
+            int last_index = last_used_index(ex);
+            if(last_index>i)
+            {
+                ex.locations[i] = ex.locations[last_index];
+                ex.locations[last_index] = -1;
+            }
+            else break;
+        }
+        checksum += ex.locations[i] * i;
     }
+
+    return checksum;
 }
 
 ULLONG compute_checksum(expansion ex)
@@ -114,22 +130,27 @@ ULLONG compute_checksum(expansion ex)
     ULLONG free_index = first_free_index(ex);
     ULLONG last_index = last_used_index(ex);
 
+    FILE *output = fopen("compute_checksum_log.txt", "w");
+
     ULLONG max = 0;
     for (ULLONG i = 0; i < free_index; i++)
     {
         if (ex.locations[i] > max)
             max = ex.locations[i];
         // if (ex.locations[i] == ex.max_file_id)
-        //     printf("[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, free_index, res, ex.locations[i], i, ex.locations[i] * i);
+        fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, free_index, res, ex.locations[i], i, ex.locations[i] * i);
 
         if (ex.locations[i] < 0)
-           printf("[compute_checksum] ERROR in %lld value: %lld\n", i, ex.locations[i]);
+            printf("[compute_checksum] ERROR in %lld value: %lld\n", i, ex.locations[i]);
 
         res += ex.locations[i] * i;
     }
 
-    if(max != ex.max_file_id)
+    if (max != ex.max_file_id)
         printf("[compute_checksum] ERROR found max file id %lld: must be %lld\n", max, ex.max_file_id);
+
+    fprintf(output, "\nchecksum: %lld\n", res);
+    fclose(output);
 
     return res;
 }

@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
         printf("\n");
     }
 
-    arrange_expansion(ex);
+    ULLONG checksum = arrange_expansion(ex);
     if (debug)
     {
         printf("[main] arranged expansion (length: %d):\n", ex.length);
@@ -60,8 +60,9 @@ int main(int argc, char *argv[])
         printf("\n");
     }
 
-    ULLONG checksum = compute_checksum(ex);
+    // ULLONG checksum = compute_checksum(ex);
     printf("\n[main] checksum: %lld\n", checksum);
+    printf("ERROR: %lld\n", 6283170117911-checksum);
     // printf("LLONG_MAX: %lld\n", LLONG_MAX);
 
     // char dummy[255];
