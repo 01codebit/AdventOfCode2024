@@ -13,8 +13,16 @@ expansion expand_disk_map(disk_map m)
         exit(EXIT_FAILURE);
     }
 
+    int chunks_sizes = 0;
+    int *file_sizes = (int *)malloc(CHUNK_SIZE * chunks_sizes * sizeof(int));
+    if (file_sizes == NULL)
+    {
+        printf("[expand_disk_map] Cannot allocate %zu bytes for file_sizes array\n", CHUNK_SIZE);
+        exit(EXIT_FAILURE);
+    }
+
     int file_or_space = 0;
-    ULLONG file_id = 0;
+    int file_id = 0;
 
     int len = 0;
     printf("[expand_disk_map] scan %d values\n", m.length);
@@ -26,14 +34,11 @@ expansion expand_disk_map(disk_map m)
         {
             chunks_fids++;
             file_ids = (ULLONG *)realloc(file_ids, chunks_fids * CHUNK_SIZE * sizeof(ULLONG));
-            // printf("[expand_disk_map] Try to reallocate %zu bytes for file_ids\n", CHUNK_SIZE * chunks_fids);
             if (file_ids == NULL)
             {
                 printf("[expand_disk_map] Cannot reallocate %zu bytes for file_ids\n", chunks_fids * CHUNK_SIZE);
                 exit(EXIT_FAILURE);
             }
-            // else
-            //     printf("[expand_disk_map] New file ids size: %zu\n", chunks_fids * CHUNK_SIZE);
         }
 
         if (file_or_space == 0)
@@ -42,6 +47,19 @@ expansion expand_disk_map(disk_map m)
             {
                 file_ids[len + k] = file_id;
             }
+
+            if (file_id > chunks_sizes * CHUNK_SIZE)
+            {
+                chunks_sizes++;
+                file_sizes = (int *)realloc(file_sizes, chunks_sizes * CHUNK_SIZE * sizeof(int));
+                if (file_sizes == NULL)
+                {
+                    printf("[expand_disk_map] Cannot reallocate %zu bytes for file_sizes\n", chunks_sizes * CHUNK_SIZE);
+                    exit(EXIT_FAILURE);
+                }
+            }
+            file_sizes[file_id] = current;
+
             file_id++;
             file_or_space = 1;
         }
@@ -64,6 +82,7 @@ expansion expand_disk_map(disk_map m)
     ex.locations = file_ids;
     ex.length = len;
     ex.max_file_id = file_id - 1;
+    ex.file_sizes = file_sizes;
 
     return ex;
 }
@@ -105,17 +124,18 @@ ULLONG arrange_expansion(expansion ex)
     //     last_index = last_used_index(ex);
     // }
 
-    for(int i=0; i<ex.length; i++)
+    for (int i = 0; i < ex.length; i++)
     {
-        if(ex.locations[i] < 0)
+        if (ex.locations[i] < 0)
         {
             int last_index = last_used_index(ex);
-            if(last_index>i)
+            if (last_index > i)
             {
                 ex.locations[i] = ex.locations[last_index];
                 ex.locations[last_index] = -1;
             }
-            else break;
+            else
+                break;
         }
         checksum += ex.locations[i] * i;
     }
@@ -130,7 +150,7 @@ ULLONG compute_checksum(expansion ex)
     ULLONG free_index = first_free_index(ex);
     ULLONG last_index = last_used_index(ex);
 
-    FILE *output = fopen("compute_checksum_log.txt", "w");
+    // FILE *output = fopen("compute_checksum_log.txt", "w");
 
     ULLONG max = 0;
     for (ULLONG i = 0; i < free_index; i++)
@@ -138,19 +158,21 @@ ULLONG compute_checksum(expansion ex)
         if (ex.locations[i] > max)
             max = ex.locations[i];
         // if (ex.locations[i] == ex.max_file_id)
-        fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, free_index, res, ex.locations[i], i, ex.locations[i] * i);
+        // fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, free_index, res, ex.locations[i], i, ex.locations[i] * i);
 
         if (ex.locations[i] < 0)
             printf("[compute_checksum] ERROR in %lld value: %lld\n", i, ex.locations[i]);
 
         res += ex.locations[i] * i;
+
+        ex.file_sizes[ex.locations[i]] -= 1;
     }
 
     if (max != ex.max_file_id)
         printf("[compute_checksum] ERROR found max file id %lld: must be %lld\n", max, ex.max_file_id);
 
-    fprintf(output, "\nchecksum: %lld\n", res);
-    fclose(output);
+    // fprintf(output, "\nchecksum: %lld\n", res);
+    // fclose(output);
 
     return res;
 }

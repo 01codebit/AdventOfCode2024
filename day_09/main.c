@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
         printf("\n");
     }
 
-    ULLONG checksum = arrange_expansion(ex);
+    ULLONG checksum_1 = arrange_expansion(ex);
+    printf("\n[main] checksum_1: %lld\n", checksum_1);
     if (debug)
     {
         printf("[main] arranged expansion (length: %d):\n", ex.length);
@@ -60,14 +61,16 @@ int main(int argc, char *argv[])
         printf("\n");
     }
 
-    // ULLONG checksum = compute_checksum(ex);
+    ULLONG checksum = compute_checksum(ex);
     printf("\n[main] checksum: %lld\n", checksum);
-    printf("ERROR: %lld\n", 6283170117911-checksum);
-    // printf("LLONG_MAX: %lld\n", LLONG_MAX);
 
-    // char dummy[255];
-    // int normalInt = 5;
-    // printf("My number is %d bytes wide and its value is %s. A normal number is %d.\n", sizeof(checksum), lltoa(checksum, dummy, 10), normalInt);
+    for(int c=0; c<=ex.max_file_id; c++)
+    {
+        int x = ex.file_sizes[c];
+        if(x>0) printf("found size > 0 : %d for file_id: %d\n", x, c);
+    }
+
+
     printf("\n");
 
     // free used memory

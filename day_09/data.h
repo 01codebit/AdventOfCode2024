@@ -2,7 +2,7 @@
 #ifndef _DATA
 #define _DATA
 
-#define CHUNK_SIZE 256
+#define CHUNK_SIZE 30000
 
 #define ULLONG long long
 
@@ -16,7 +16,8 @@ typedef struct
 {
     ULLONG *locations;
     int length;
-    ULLONG max_file_id;
+    int max_file_id;
+    int *file_sizes;
 } expansion;
 
 #endif
