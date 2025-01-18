@@ -48,9 +48,42 @@ int main(int argc, char *argv[])
         }
         printf("\n");
     }
+    // if (debug)
+    {
+        FILE *output = fopen("expanded.txt", "w");
+        if (output == NULL)
+            printf("[main] ERROR opening file expanded.txt\n");
+        else
+        {
+            for (int i = 0; i < ex.length; i++)
+            {
+                // if(ex.locations[i]<0)
+                //     fprintf(output, ".,");
+                // else
+                //     fprintf(output, "%d,", ex.locations[i]);
+                fprintf(output, " %d", ex.locations[i]);
+            }
+            fprintf(output, "\n");
+            fclose(output);
+        }
+    }
 
-    ULLONG checksum_1 = arrange_expansion(ex);
-    printf("\n[main] checksum_1: %lld\n", checksum_1);
+    // PART 1 -------------------------------------------------------- begin
+    // ULLONG checksum_1 = arrange_expansion(ex);
+    // printf("\n[main] checksum_1: %lld\n", checksum_1);
+    // if (debug)
+    // {
+    //     printf("[main] arranged expansion (length: %d):\n", ex.length);
+    //     for (int i = 0; i < ex.length; i++)
+    //     {
+    //         printf(" %d", ex.locations[i]);
+    //     }
+    //     printf("\n");
+    // }
+    // PART 1 -------------------------------------------------------- end
+
+    // PART 2 -------------------------------------------------------- begin
+    arrange_expansion_n(ex);
     if (debug)
     {
         printf("[main] arranged expansion (length: %d):\n", ex.length);
@@ -60,16 +93,28 @@ int main(int argc, char *argv[])
         }
         printf("\n");
     }
+    // if (debug)
+    {
+        FILE *output = fopen("arranged.txt", "w");
+        if (output == NULL)
+            printf("[main] ERROR opening file arranged.txt\n");
+        else
+        {
+            for (int i = 0; i < ex.length; i++)
+            {
+                fprintf(output, " %d", ex.locations[i]);
+            }
+            fprintf(output, "\n");
+            fclose(output);
+        }
+    }
+    // PART 2 -------------------------------------------------------- end
 
     ULLONG checksum = compute_checksum(ex);
-    printf("\n[main] checksum: %lld\n", checksum);
+    printf("\n[main] checksum: %lld", checksum);
 
-    for(int c=0; c<=ex.max_file_id; c++)
-    {
-        int x = ex.file_sizes[c];
-        if(x>0) printf("found size > 0 : %d for file_id: %d\n", x, c);
-    }
-
+    if (checksum >= 6307653502443)
+        printf(" <--- ERROR: checksum is too high!\n"); // first try result
 
     printf("\n");
 

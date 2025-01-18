@@ -9,3 +9,5 @@ expansion expand_disk_map(disk_map m);
 ULLONG arrange_expansion(expansion ex);
 
 ULLONG compute_checksum(expansion ex);
+
+void arrange_expansion_n(expansion ex);

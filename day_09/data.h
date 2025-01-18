@@ -17,7 +17,13 @@ typedef struct
     ULLONG *locations;
     int length;
     int max_file_id;
-    int *file_sizes;
 } expansion;
+
+typedef struct 
+{
+    int file_id;
+    int start;
+    int count;
+} n_index;
 
 #endif

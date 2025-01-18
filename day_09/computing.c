@@ -82,7 +82,6 @@ expansion expand_disk_map(disk_map m)
     ex.locations = file_ids;
     ex.length = len;
     ex.max_file_id = file_id - 1;
-    ex.file_sizes = file_sizes;
 
     return ex;
 }
@@ -147,32 +146,127 @@ ULLONG compute_checksum(expansion ex)
 {
     ULLONG res = 0;
 
-    ULLONG free_index = first_free_index(ex);
-    ULLONG last_index = last_used_index(ex);
+    FILE *output = fopen("compute_checksum_log.txt", "w");
 
-    // FILE *output = fopen("compute_checksum_log.txt", "w");
-
-    ULLONG max = 0;
-    for (ULLONG i = 0; i < free_index; i++)
+    int max = 0;
+    for (int i = 0; i < ex.length; i++)
     {
         if (ex.locations[i] > max)
             max = ex.locations[i];
-        // if (ex.locations[i] == ex.max_file_id)
-        // fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, free_index, res, ex.locations[i], i, ex.locations[i] * i);
 
-        if (ex.locations[i] < 0)
-            printf("[compute_checksum] ERROR in %lld value: %lld\n", i, ex.locations[i]);
 
-        res += ex.locations[i] * i;
-
-        ex.file_sizes[ex.locations[i]] -= 1;
+        if (ex.locations[i] > 0)
+        {
+            fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, ex.length, res, ex.locations[i], i, ex.locations[i] * i);
+            res += ex.locations[i] * i;
+        }
+        else
+            fprintf(output, "[%5d/%d] %lld (%lld)\n", i, ex.length, res, ex.locations[i]);
     }
 
     if (max != ex.max_file_id)
-        printf("[compute_checksum] ERROR found max file id %lld: must be %lld\n", max, ex.max_file_id);
+        printf("[compute_checksum] ERROR found max file id %d: must be %d\n", max, ex.max_file_id);
 
-    // fprintf(output, "\nchecksum: %lld\n", res);
-    // fclose(output);
+    fprintf(output, "\nchecksum: %lld\n", res);
+    fclose(output);
 
     return res;
+}
+
+int first_free_n_index(expansion e, int n)
+{
+    int start = 0;
+    int count = 0;
+
+    for (int i = 0; i < e.length; i++)
+    {
+        if (e.locations[i] == -1)
+        {
+            if (count == 0)
+            {
+                start = i;
+            }
+            count++;
+
+            if (count == n)
+            {
+                break;
+            }
+        }
+        else
+        {
+            count = 0;
+        }
+    }
+
+    return start;
+}
+
+n_index last_used_n_index(expansion e, int prev_id)
+{
+    n_index ind;
+
+    int count = 0;
+    int start = -1;
+    int current_file_id = -1;
+
+    for (int i = e.length - 1; i > 0; i--)
+    {
+        if (e.locations[i] > -1 && current_file_id == -1 && e.locations[i] < prev_id)
+        {
+            current_file_id = e.locations[i];
+            count++;
+            start = i;
+        }
+        else if (e.locations[i] > -1 && e.locations[i] == current_file_id)
+        {
+            count++;
+            start = i;
+        }
+        else if (e.locations[i] == -1 && current_file_id != -1)
+        {
+            break;
+        }
+    }
+
+    ind.file_id = current_file_id;
+    ind.start = start;
+    ind.count = count;
+
+    return ind;
+}
+
+void arrange_expansion_n(expansion ex)
+{
+    // printf("-----------------------\n");
+    // printf("arrange_expansion_n\n");
+    // printf("-----------------------\n");
+    n_index last_index = last_used_n_index(ex, ex.max_file_id + 1);
+    int free_index = first_free_n_index(ex, last_index.count);
+    // printf("last_index: file id: %d  start: %d count: %d\n", last_index.file_id, last_index.start, last_index.count);
+    // printf("free_index: %d\n", free_index);
+
+    while (last_index.start >= 0)
+    {
+        if((free_index + last_index.count) < last_index.start)
+        {
+            for (int i = 0; i < last_index.count; i++)
+            {
+                ex.locations[free_index + i] = ex.locations[last_index.start + i];
+                ex.locations[last_index.start + i] = -1;
+            }
+        }
+        // for (int i = 0; i < ex.length; i++)
+        // {
+        //     printf(" %d", ex.locations[i]);
+        // }
+        // printf("\n");
+
+        last_index = last_used_n_index(ex, last_index.file_id);
+        // printf("last_index: file id: %d  start: %d count: %d\n", last_index.file_id, last_index.start, last_index.count);
+        free_index = first_free_n_index(ex, last_index.count);
+        // printf("free_index: %d\n", free_index);
+    }
+
+    // printf("-----------------------\n");
 }
