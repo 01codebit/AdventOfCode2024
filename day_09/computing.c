@@ -144,33 +144,39 @@ ULLONG arrange_expansion(expansion ex)
 
 ULLONG compute_checksum(expansion ex)
 {
-    ULLONG res = 0;
+    ULLONG checksum = 0;
 
     FILE *output = fopen("compute_checksum_log.txt", "w");
 
-    int max = 0;
     for (int i = 0; i < ex.length; i++)
     {
-        if (ex.locations[i] > max)
-            max = ex.locations[i];
+        ULLONG current = ex.locations[i];
 
-
-        if (ex.locations[i] > 0)
+        if (current > ex.max_file_id)
         {
-            fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, ex.length, res, ex.locations[i], i, ex.locations[i] * i);
-            res += ex.locations[i] * i;
+            printf("[compute_checksum] ERROR found file id %d (max file id is %d)\n", current, ex.max_file_id);
+        }
+        else if (current > 0)
+        {
+            fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, ex.length, checksum, current, i, current * i);
+            checksum += current * i;
+
+            if (checksum >= 6307653502443)
+            {
+                fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld) CHECKSUM IS TOO HIGH ***************\n", i, ex.length, checksum, current, i, current * i);
+                printf("[%5d/%d] %lld += %lld * %lld (= %lld) CHECKSUM IS TOO HIGH ***************\n", i, ex.length, checksum, current, i, current * i);
+            }
         }
         else
-            fprintf(output, "[%5d/%d] %lld (%lld)\n", i, ex.length, res, ex.locations[i]);
+        {
+            fprintf(output, "[%5d/%d] %lld (%lld)\n", i, ex.length, checksum, current);
+        }
     }
 
-    if (max != ex.max_file_id)
-        printf("[compute_checksum] ERROR found max file id %d: must be %d\n", max, ex.max_file_id);
-
-    fprintf(output, "\nchecksum: %lld\n", res);
+    fprintf(output, "\nchecksum: %lld\n", checksum);
     fclose(output);
 
-    return res;
+    return checksum;
 }
 
 int first_free_n_index(expansion e, int n)
@@ -233,6 +239,9 @@ n_index last_used_n_index(expansion e, int prev_id)
     ind.start = start;
     ind.count = count;
 
+    if (count > 9)
+        printf("ERROR: file_id: %d has %d locations\n", current_file_id, count);
+
     return ind;
 }
 
@@ -248,7 +257,7 @@ void arrange_expansion_n(expansion ex)
 
     while (last_index.start >= 0)
     {
-        if((free_index + last_index.count) < last_index.start)
+        if ((free_index + last_index.count) < last_index.start)
         {
             for (int i = 0; i < last_index.count; i++)
             {

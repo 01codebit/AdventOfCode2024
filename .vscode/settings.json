@@ -7,6 +7,7 @@
         "stdio.h": "c",
         "guard_path.h": "c",
         "utility.h": "c",
-        "map_parser.h": "c"
+        "map_parser.h": "c",
+        "main.h": "c"
     }
 }
