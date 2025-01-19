@@ -2,9 +2,9 @@
 #ifndef _DATA
 #define _DATA
 
-#define CHUNK_SIZE 256
+#define CHUNK_SIZE 100000
 
-#define ULLONG long long
+#define LLONG long long
 
 typedef struct
 {
@@ -14,7 +14,7 @@ typedef struct
 
 typedef struct
 {
-    ULLONG *locations;
+    LLONG *locations;
     int length;
     int max_file_id;
 } expansion;

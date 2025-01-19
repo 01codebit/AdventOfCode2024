@@ -6,7 +6,7 @@ expansion expand_disk_map(disk_map m)
     // printf("[expand_disk_map] Try to allocate %zu bytes for locations array\n", CHUNK_SIZE);
 
     int chunks_fids = 1;
-    ULLONG *file_ids = (ULLONG *)malloc(CHUNK_SIZE * chunks_fids * sizeof(ULLONG));
+    LLONG *file_ids = (LLONG *)malloc(CHUNK_SIZE * chunks_fids * sizeof(LLONG));
     if (file_ids == NULL)
     {
         printf("[expand_disk_map] Cannot allocate %zu bytes for locations array\n", CHUNK_SIZE);
@@ -33,7 +33,7 @@ expansion expand_disk_map(disk_map m)
         if ((len + current) > (CHUNK_SIZE * chunks_fids))
         {
             chunks_fids++;
-            file_ids = (ULLONG *)realloc(file_ids, chunks_fids * CHUNK_SIZE * sizeof(ULLONG));
+            file_ids = (LLONG *)realloc(file_ids, chunks_fids * CHUNK_SIZE * sizeof(LLONG));
             if (file_ids == NULL)
             {
                 printf("[expand_disk_map] Cannot reallocate %zu bytes for file_ids\n", chunks_fids * CHUNK_SIZE);
@@ -108,9 +108,9 @@ int last_used_index(expansion e)
     return i;
 }
 
-ULLONG arrange_expansion(expansion ex)
+LLONG arrange_expansion(expansion ex)
 {
-    ULLONG checksum = 0;
+    LLONG checksum = 0;
     // int free_index = first_free_index(ex);
     // int last_index = last_used_index(ex);
 
@@ -142,15 +142,15 @@ ULLONG arrange_expansion(expansion ex)
     return checksum;
 }
 
-ULLONG compute_checksum(expansion ex)
+LLONG compute_checksum(expansion ex)
 {
-    ULLONG checksum = 0;
+    LLONG checksum = 0;
 
     FILE *output = fopen("compute_checksum_log.txt", "w");
 
     for (int i = 0; i < ex.length; i++)
     {
-        ULLONG current = ex.locations[i];
+        LLONG current = ex.locations[i];
 
         if (current > ex.max_file_id)
         {
@@ -158,13 +158,16 @@ ULLONG compute_checksum(expansion ex)
         }
         else if (current > 0)
         {
-            fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, ex.length, checksum, current, i, current * i);
             checksum += current * i;
 
             if (checksum >= 6307653502443)
             {
                 fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld) CHECKSUM IS TOO HIGH ***************\n", i, ex.length, checksum, current, i, current * i);
                 printf("[%5d/%d] %lld += %lld * %lld (= %lld) CHECKSUM IS TOO HIGH ***************\n", i, ex.length, checksum, current, i, current * i);
+            }
+            else
+            {
+                fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, ex.length, checksum, current, i, current * i);
             }
         }
         else

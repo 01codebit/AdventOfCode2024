@@ -1,7 +1,7 @@
 #include "main.h"
 
 
-void compare_array(ULLONG* ids_1, ULLONG* ids_2, int count)
+void compare_array(LLONG* ids_1, LLONG* ids_2, int count)
 {
     int found = 0;
     for(int i=0; i<count; i++)
@@ -15,9 +15,9 @@ void compare_array(ULLONG* ids_1, ULLONG* ids_2, int count)
     if(!found) printf("SUCCESS: compare OK\n");
 }
 
-ULLONG * count_occurrences(ULLONG * array, int count, int max_file_id)
+LLONG * count_occurrences(LLONG * array, int count, int max_file_id)
 {
-    ULLONG* result = (ULLONG*)malloc((max_file_id+1) * sizeof(ULLONG));
+    LLONG* result = (LLONG*)malloc((max_file_id+1) * sizeof(LLONG));
     for(int i=0; i<=max_file_id; i++)
     {
         result[i] = 0;
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
         }
         printf("\n");
     }
-    ULLONG* occ_1 = count_occurrences(ex.locations, ex.length, ex.max_file_id);
+    LLONG* occ_1 = count_occurrences(ex.locations, ex.length, ex.max_file_id);
     int occ_count = 0;
     for(int i=0; i<=ex.max_file_id; i++)
     {
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
         printf("arranged_free_count: %d\n", arranged_free_count);
     }
 
-    ULLONG* occ_2 = count_occurrences(ex.locations, ex.length, ex.max_file_id);
+    LLONG* occ_2 = count_occurrences(ex.locations, ex.length, ex.max_file_id);
     int occ_count_2 = 0;
     for(int i=0; i<=ex.max_file_id; i++)
     {
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
 
     // PART 2 -------------------------------------------------------- end
 
-    ULLONG checksum = compute_checksum(ex);
+    LLONG checksum = compute_checksum(ex);
     printf("\n[main] checksum: %lld", checksum);
 
     if (checksum >= 6307653502443)
