@@ -1,6 +1,6 @@
 #include "computing.h"
 
-expansion expand_disk_map(disk_map m)
+expansion expand_disk_map(const disk_map m)
 {
     int chunks = 1;
 
@@ -84,7 +84,7 @@ expansion expand_disk_map(disk_map m)
     return ex;
 }
 
-int first_free_index(expansion e)
+int first_free_index(const expansion e)
 {
     int i = 0;
     for (i = 0; i < e.length; i++)
@@ -95,7 +95,7 @@ int first_free_index(expansion e)
     return i;
 }
 
-int last_used_index(expansion e)
+int last_used_index(const expansion e)
 {
     int i = e.length - 1;
     for (i = e.length - 1; i > 0; i--)
@@ -106,7 +106,7 @@ int last_used_index(expansion e)
     return i;
 }
 
-LLONG arrange_expansion(expansion ex)
+LLONG arrange_expansion(const expansion ex)
 {
     LLONG checksum = 0;
 
@@ -129,7 +129,7 @@ LLONG arrange_expansion(expansion ex)
     return checksum;
 }
 
-LLONG compute_checksum(expansion ex)
+LLONG compute_checksum(const expansion ex)
 {
     LLONG checksum = 0;
 
@@ -162,7 +162,7 @@ LLONG compute_checksum(expansion ex)
     return checksum;
 }
 
-int first_free_n_index(expansion e, int n)
+int first_free_n_index(const expansion e, int n)
 {
     int start = 0;
     int count = 0;
@@ -191,7 +191,7 @@ int first_free_n_index(expansion e, int n)
     return start;
 }
 
-n_index last_used_n_index(expansion e, int prev_id)
+n_index last_used_n_index(const expansion e, int prev_id)
 {
     n_index ind;
 
@@ -228,7 +228,7 @@ n_index last_used_n_index(expansion e, int prev_id)
     return ind;
 }
 
-void arrange_expansion_n(expansion ex)
+void arrange_expansion_n(const expansion ex)
 {
     n_index last_index = last_used_n_index(ex, ex.max_file_id + 1);
     int free_index = first_free_n_index(ex, last_index.count);
