@@ -29,7 +29,7 @@ expansion expand_disk_map(const disk_map m)
     {
         int current = m.map[i];
 
-        if ((len + current) > (CHUNK_SIZE * chunks_fids))
+        if ((len + current) >= (CHUNK_SIZE * chunks_fids))
         {
             chunks_fids++;
             file_ids = (LLONG *)realloc(file_ids, chunks_fids * CHUNK_SIZE * sizeof(LLONG));
@@ -47,7 +47,7 @@ expansion expand_disk_map(const disk_map m)
                 file_ids[len + k] = file_id;
             }
 
-            if (file_id > chunks_sizes * CHUNK_SIZE)
+            if (file_id >= chunks_sizes * CHUNK_SIZE)
             {
                 chunks_sizes++;
                 file_sizes = (int *)realloc(file_sizes, chunks_sizes * CHUNK_SIZE * sizeof(int));

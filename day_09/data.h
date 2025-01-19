@@ -2,7 +2,7 @@
 #ifndef _DATA
 #define _DATA
 
-#define CHUNK_SIZE 100000
+#define CHUNK_SIZE 256
 
 #define LLONG long long
 

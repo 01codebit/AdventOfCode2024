@@ -23,7 +23,7 @@ disk_map read_disk_map(char *filename)
         {
             int x = ch - '0';
 
-            if (len > CHUNK_SIZE * chunks)
+            if (len >= CHUNK_SIZE * chunks)
             {
                 chunks++;
                 data = (int *)realloc(data, chunks * CHUNK_SIZE * sizeof(int));
