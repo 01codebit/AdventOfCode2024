@@ -3,7 +3,6 @@
 expansion expand_disk_map(disk_map m)
 {
     int chunks = 1;
-    // printf("[expand_disk_map] Try to allocate %zu bytes for locations array\n", CHUNK_SIZE);
 
     int chunks_fids = 1;
     LLONG *file_ids = (LLONG *)malloc(CHUNK_SIZE * chunks_fids * sizeof(LLONG));
@@ -65,7 +64,6 @@ expansion expand_disk_map(disk_map m)
         }
         else if (file_or_space == 1)
         {
-            // printf("set -1 for %d locations starting from %d\n", current, len);
             for (int k = 0; k < current; k++)
             {
                 file_ids[len + k] = -1;
@@ -111,17 +109,6 @@ int last_used_index(expansion e)
 LLONG arrange_expansion(expansion ex)
 {
     LLONG checksum = 0;
-    // int free_index = first_free_index(ex);
-    // int last_index = last_used_index(ex);
-
-    // while (free_index < last_index)
-    // {
-    //     ex.locations[free_index] = ex.locations[last_index];
-    //     ex.locations[last_index] = -1;
-
-    //     free_index = first_free_index(ex);
-    //     last_index = last_used_index(ex);
-    // }
 
     for (int i = 0; i < ex.length; i++)
     {
@@ -161,15 +148,7 @@ LLONG compute_checksum(expansion ex)
             LLONG prev = checksum;
             checksum += current * i;
 
-            if (checksum >= 6307653502443)
-            {
-                fprintf(output, "[%5d/%d] %lld += %lld * %d (= %lld) = %lld CHECKSUM IS TOO HIGH ***************\n", i, ex.length, prev, current, i, current * i, checksum);
-                printf("[%5d/%d] %lld += %lld * %d (= %lld) CHECKSUM IS TOO HIGH ***************\n", i, ex.length, checksum, current, i, current * i);
-            }
-            else
-            {
-                fprintf(output, "[%5d/%d] %lld += %lld * %d (= %lld) = %lld \n", i, ex.length, prev, current, i, current * i, checksum);
-            }
+            fprintf(output, "[%5d/%d] %lld += %lld * %d (= %lld) = %lld \n", i, ex.length, prev, current, i, current * i, checksum);
         }
         else
         {
@@ -251,13 +230,8 @@ n_index last_used_n_index(expansion e, int prev_id)
 
 void arrange_expansion_n(expansion ex)
 {
-    // printf("-----------------------\n");
-    // printf("arrange_expansion_n\n");
-    // printf("-----------------------\n");
     n_index last_index = last_used_n_index(ex, ex.max_file_id + 1);
     int free_index = first_free_n_index(ex, last_index.count);
-    // printf("last_index: file id: %d  start: %d count: %d\n", last_index.file_id, last_index.start, last_index.count);
-    // printf("free_index: %d\n", free_index);
 
     while (last_index.start >= 0)
     {
@@ -269,17 +243,8 @@ void arrange_expansion_n(expansion ex)
                 ex.locations[last_index.start + i] = -1;
             }
         }
-        // for (int i = 0; i < ex.length; i++)
-        // {
-        //     printf(" %d", ex.locations[i]);
-        // }
-        // printf("\n");
 
         last_index = last_used_n_index(ex, last_index.file_id);
-        // printf("last_index: file id: %d  start: %d count: %d\n", last_index.file_id, last_index.start, last_index.count);
         free_index = first_free_n_index(ex, last_index.count);
-        // printf("free_index: %d\n", free_index);
     }
-
-    // printf("-----------------------\n");
 }
