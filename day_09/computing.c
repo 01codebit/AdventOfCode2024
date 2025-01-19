@@ -158,16 +158,17 @@ LLONG compute_checksum(expansion ex)
         }
         else if (current > 0)
         {
+            LLONG prev = checksum;
             checksum += current * i;
 
             if (checksum >= 6307653502443)
             {
-                fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld) CHECKSUM IS TOO HIGH ***************\n", i, ex.length, checksum, current, i, current * i);
-                printf("[%5d/%d] %lld += %lld * %lld (= %lld) CHECKSUM IS TOO HIGH ***************\n", i, ex.length, checksum, current, i, current * i);
+                fprintf(output, "[%5d/%d] %lld += %lld * %d (= %lld) = %lld CHECKSUM IS TOO HIGH ***************\n", i, ex.length, prev, current, i, current * i, checksum);
+                printf("[%5d/%d] %lld += %lld * %d (= %lld) CHECKSUM IS TOO HIGH ***************\n", i, ex.length, checksum, current, i, current * i);
             }
             else
             {
-                fprintf(output, "[%5d/%d] %lld += %lld * %lld (= %lld)\n", i, ex.length, checksum, current, i, current * i);
+                fprintf(output, "[%5d/%d] %lld += %lld * %d (= %lld) = %lld \n", i, ex.length, prev, current, i, current * i, checksum);
             }
         }
         else
@@ -260,7 +261,7 @@ void arrange_expansion_n(expansion ex)
 
     while (last_index.start >= 0)
     {
-        if ((free_index + last_index.count) < last_index.start)
+        if ((free_index + last_index.count-1) < last_index.start)
         {
             for (int i = 0; i < last_index.count; i++)
             {
