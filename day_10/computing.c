@@ -1,6 +1,6 @@
 #include "computing.h"
 
-int find_trail(const map m, const int x, const int y, const int value)
+int find_trail(const map m, const int x, const int y, const int value, int *check_list)
 {
     int debug = 0;
 
@@ -13,23 +13,35 @@ int find_trail(const map m, const int x, const int y, const int value)
 
     if (m.data[y][x] == target)
     {
-        printf("[find_trail] step [%d] in (%d, %d)", target, x, y);
+        if(debug) printf("[find_trail] step [%d] in (%d, %d)", target, x, y);
 
         if (target == 9)
         {
-            printf(" [FOUND trail end]\n");
-            while (!getchar()){};
+            if(debug) printf(" [FOUND trail end]\n");
+            //while (!getchar()){};
 
-            return 1;
+            // part 1: trailhead score
+            if(PART == 1)
+            {
+                if(check_list[y * m.rows + x]==0)
+                {
+                    check_list[y * m.rows + x] = 1;
+                    return 1;
+                }
+                else return 0;
+            }
+
+            // part 2: rating
+            if(PART == 2) return 1;
         }
         else
         {
-            printf("\n");
-            //printf("[find_trail] search around (%d, %d)\n", x, y);
-            return find_trail(m, x - 1, y, target) +
-                   find_trail(m, x, y - 1, target) +
-                   find_trail(m, x + 1, y, target) +
-                   find_trail(m, x, y + 1, target);
+            if(debug) printf("\n");
+            // printf("[find_trail] search around (%d, %d)\n", x, y);
+            return find_trail(m, x - 1, y, target, check_list) +
+                   find_trail(m, x, y - 1, target, check_list) +
+                   find_trail(m, x + 1, y, target, check_list) +
+                   find_trail(m, x, y + 1, target, check_list);
         }
     }
     else
@@ -42,12 +54,18 @@ int find_trail(const map m, const int x, const int y, const int value)
 int search(const map m, const int x, const int y)
 {
     int target = 0;
-    printf("[search] start search from (%d, %d)\n", x, y);
+    // printf("[search] start search from (%d, %d)\n", x, y);
 
-    return find_trail(m, x - 1, y, target) +
-           find_trail(m, x, y - 1, target) +
-           find_trail(m, x + 1, y, target) +
-           find_trail(m, x, y + 1, target);
+    int *check_list = (int *)malloc(m.cols * m.rows * sizeof(int));
+    for(int i=0; i<m.cols * m.rows; i++)
+    {
+        check_list[i]=0;
+    };
+
+    return find_trail(m, x - 1, y, target, check_list) +
+           find_trail(m, x, y - 1, target, check_list) +
+           find_trail(m, x + 1, y, target, check_list) +
+           find_trail(m, x, y + 1, target, check_list);
 }
 
 int compute_trails(const map m)
@@ -64,7 +82,7 @@ int compute_trails(const map m)
             {
                 // printf("found trailhead in (%d, %d)\n", x, y);
                 //  trailhead
-                result = search(m, x, y);
+                result += search(m, x, y);
             }
         }
     }

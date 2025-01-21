@@ -48,7 +48,8 @@ int main(int argc, char *argv[])
 
     int trails = compute_trails(m);
 
-    printf("[main] computed trails: %d\n", trails);
+    if(PART == 1) printf("[main] computed trails: %d\n", trails);
+    else if(PART == 2) printf("[main] total rating: %d\n", trails);
 
     printf("\n");
 

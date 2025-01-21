@@ -5,6 +5,8 @@
 #define CHUNK_SIZE 256
 #define DEBUG 0
 
+#define PART 2
+
 typedef struct
 {
     const int **data;
