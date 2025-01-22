@@ -8,6 +8,7 @@
         "guard_path.h": "c",
         "utility.h": "c",
         "map_parser.h": "c",
-        "main.h": "c"
+        "main.h": "c",
+        "utility": "c"
     }
 }
