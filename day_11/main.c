@@ -5,11 +5,30 @@
 #include "file_reader.h"
 #include "computing.h"
 
+void print_linked_list(linked_list **plist)
+{
+    linked_list *list = *plist;
+    node *current_node = list->first;
+    printf("[print_linked_list] linked list length: %d\n", list->count);
+
+    int count = 0;
+    while (current_node != NULL)
+    {
+        printf("[%d] %lld ", count, current_node->value);
+        current_node = current_node->next;
+        count++;
+        if (current_node != NULL)
+            printf("-> ");
+    }
+    printf("\n");
+}
+
 int main(int argc, char *argv[])
 {
     // defaults
     char *filename = "example.txt";
     int debug = 0;
+    int steps = 25;
 
     char filter = ' ';
 
@@ -24,8 +43,17 @@ int main(int argc, char *argv[])
 
         if (argc > 2)
         {
-            debug = atoi(argv[2]);
-            printf("debug: %d\n", debug);
+            int a2 = atoi(argv[2]);
+            if(a2>1) 
+            {
+                steps = a2;
+                printf("steps: %d\n", steps);
+            }
+            else
+            {
+                debug = atoi(argv[2]);
+                printf("debug: %d\n", debug);
+            }
         }
     }
 
@@ -39,21 +67,27 @@ int main(int argc, char *argv[])
 
     linked_list *stones = convert_to_linked_list(stones_str, debug);
     printf("[main] linked list initial length: %d\n", stones->count);
-    node* n = stones->first;
-    if(debug) while(n!=NULL)
-    {
-        printf("%s\n", n->value);
-        n = n->next;
-        //while(!getchar()) {}
-    }
+    node *n = stones->first;
+    if (debug)
+        while (n != NULL)
+        {
+            printf("%lld\n", n->value);
+            n = n->next;
+            // while(!getchar()) {}
+        }
+        
+    print_linked_list(&stones);
 
-    int steps = 25;
     for (int i = 0; i < steps; i++)
     {
-        blink_step(stones, debug);
-        printf("[step:%2d] count: %d\n", i+1, stones->count);
+        blink_step(&stones, debug);
+        printf("[step:%2d] count: %lld\n", i + 1, stones->count);
+        if(debug) print_linked_list(&stones);
 
-        if(debug) while(!getchar()) {}
+        if (debug)
+            while (!getchar())
+            {
+            }
     }
 
     printf("\n");

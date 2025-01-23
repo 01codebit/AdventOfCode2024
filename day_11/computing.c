@@ -9,31 +9,34 @@ linked_list *convert_to_linked_list(const char *str, int debug)
     char str2[256];
     strcpy(str2, str);
     char *token = strtok(str2, " ");
+    char *end_ptr;
+    long long val = strtoll(token, &end_ptr, 10);
 
     node *nd = (node *)malloc(sizeof(node));
-    nd->value = token;
+    nd->value = val;
 
     list->first = nd;
     node *prev = nd;
 
     if (debug)
-        printf("[convert_to_linked_list] add value: %s\n", nd->value);
+        printf("[convert_to_linked_list] add value: %lld\n", nd->value);
 
     while (token)
     {
         if (list->count > 0)
         {
             node *nd = (node *)malloc(sizeof(node));
-            nd->value = token;
+            nd->value = val;
             prev->next = nd;
             prev = nd;
             if (debug)
-                printf("[convert_to_linked_list] add value: %s\n", nd->value);
+                printf("[convert_to_linked_list] add value: %lld\n", nd->value);
         }
 
         list->count++;
 
         token = strtok(NULL, " ");
+        val = strtoll(token, &end_ptr, 10);
     }
     prev->next = NULL;
 
@@ -43,6 +46,7 @@ linked_list *convert_to_linked_list(const char *str, int debug)
 char *insert_char_in_string(char *str, char ch, int position)
 {
     size_t sz = strlen(str) + 1;
+
     char *result = (char *)malloc(sz * sizeof(char));
     int offset = 0;
     for (int i = 0; i < sz; i++)
@@ -134,16 +138,20 @@ char *blink_step_str(const char *stones, int debug)
     return result;
 }
 
-void blink_step(linked_list *ll, int debug)
+void blink_step(linked_list **llp, int debug)
 {
-    if(debug) printf("[blink_step] list first value: '%s', second: '%s',  list length: %d\n", ll->first->value, ll->first->next->value, ll->count);
+    linked_list *ll = *llp;
+
+    if (debug)
+        printf("[blink_step] list first value: %lld, second: %lld,  list length: %d\n", ll->first->value, ll->first->next->value, ll->count);
+
     node *current_node = ll->first;
     int count = 0;
 
     while (current_node != NULL)
     {
         if (debug)
-            printf("[blink_step] current_node value: %s\n", current_node->value);
+            printf("[blink_step] current_node value: %lld\n", current_node->value);
 
         /*
             first applicable rule in this list:
@@ -154,31 +162,46 @@ void blink_step(linked_list *ll, int debug)
 
         */
 
-        char *token = current_node->value;
-        if (strcmp(token, "0") == 0)
+        long long val = current_node->value;
+        char *end_ptr;
+        char val_str[50];
+        sprintf(val_str, "%lld", val);
+
+        if(debug) printf("current node value string: '%s'\n", val_str);
+
+        if (val == 0)
         {
             if (debug)
                 printf("[blink_step]   apply rule #1: ");
-            strcpy(current_node->value, "1");
-            if(debug) printf("result: %s\n", current_node->value);
+            current_node->value = 1;
+            if (debug)
+                printf("result: %lld\n", current_node->value);
+
+            current_node = current_node->next;
         }
-        else if (strlen(token) % 2 == 0)
+        else if (strlen(val_str) > 1 && strlen(val_str) % 2 == 0)
         {
             if (debug)
                 printf("[blink_step]   apply rule #2: ");
-            int pos = strlen(token) / 2;
-            strcpy(current_node->value, insert_char_in_string(current_node->value, ' ', pos));
+            int pos = strlen(val_str) / 2;
+            strcpy(val_str, insert_char_in_string(val_str, ' ', pos));
+
+            char *first = strtok(val_str, " ");
+            char *second = strtok(NULL, " ");
 
             // split node
             node *new_node = (node *)malloc(sizeof(node));
-            new_node->value = ""; // prima parte del token
+            new_node->value = strtoll(second, &end_ptr, 10); // seconda parte del token
             new_node->next = current_node->next;
 
-            current_node->value = ""; // second parte del token
+            current_node->value = strtoll(first, &end_ptr, 10); // prima parte del token
             current_node->next = new_node;
 
             ll->count++;
-            if(debug) printf("result: %s %s\n", current_node->value, current_node->next->value);
+            if (debug)
+                printf("result: %lld %lld\n", current_node->value, current_node->next->value);
+
+            current_node = current_node->next->next;
         }
         else
         {
@@ -186,12 +209,11 @@ void blink_step(linked_list *ll, int debug)
                 printf("[blink_step]   apply rule #3: ");
             char *endptr;
             // Convert the string to a long integer
-            long long num = strtoll(token, &endptr, 10);
-            long long val = num * 2024;
-            sprintf(current_node->value, "%lld", val);
-            if(debug) printf("result: %s\n", current_node->value);
+            current_node->value = val * 2024;
+            if (debug)
+                printf("result: %lld\n", current_node->value);
+
+            current_node = current_node->next;
         }
-        
-        current_node = current_node->next;
     }
 }

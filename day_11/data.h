@@ -10,7 +10,7 @@
 
 struct _node
 {
-    char *value;
+    long long value;
     struct _node *next;
 };
 
@@ -19,7 +19,7 @@ typedef struct _node node;
 typedef struct
 {
     node *first;
-    int count;
+    long long count;
 } linked_list;
 
 #endif
