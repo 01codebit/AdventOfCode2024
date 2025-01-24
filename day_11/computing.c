@@ -6,35 +6,32 @@ linked_list *convert_to_linked_list(const char *str, int debug)
     list->count = 0;
     list->first = NULL;
 
-    char str2[256];
+    char* str2;//[2048];
     strcpy(str2, str);
     char *token = strtok(str2, " ");
     char *end_ptr;
     long long val = strtoll(token, &end_ptr, 10);
 
     node *nd = (node *)malloc(sizeof(node));
+    // printf("[convert_to_linked_list] first node value: %lld\n", val);
     nd->value = val;
 
     list->first = nd;
     node *prev = nd;
-
-    if (debug)
-        printf("[convert_to_linked_list] add value: %lld\n", nd->value);
 
     while (token)
     {
         if (list->count > 0)
         {
             node *nd = (node *)malloc(sizeof(node));
+            // printf("[convert_to_linked_list] #%lld node value: %lld", list->count, val);
             nd->value = val;
             prev->next = nd;
+            // list->pre_last = prev;
             prev = nd;
-            if (debug)
-                printf("[convert_to_linked_list] add value: %lld\n", nd->value);
         }
 
         list->count++;
-
         token = strtok(NULL, " ");
         val = strtoll(token, &end_ptr, 10);
     }
@@ -142,9 +139,6 @@ void blink_step(linked_list **llp, int debug)
 {
     linked_list *ll = *llp;
 
-    if (debug)
-        printf("[blink_step] list first value: %lld, second: %lld,  list length: %d\n", ll->first->value, ll->first->next->value, ll->count);
-
     node *current_node = ll->first;
     int count = 0;
 
@@ -166,8 +160,6 @@ void blink_step(linked_list **llp, int debug)
         char *end_ptr;
         char val_str[50];
         sprintf(val_str, "%lld", val);
-
-        if(debug) printf("current node value string: '%s'\n", val_str);
 
         if (val == 0)
         {

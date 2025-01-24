@@ -1,4 +1,5 @@
 {
+{
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
@@ -8,8 +9,9 @@
             "name": "(Windows) Launch",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/day_08/day_08.exe",
-            "args": ["C:/Users/lumas/Documents/Programming/C/AdventOfCode2024/day_08/aoc2024_d8_input.txt"],
+            "program": "${workspaceFolder}/day_11/day_11.exe",
+            // "args": ["C:/Users/lumas/Documents/Programming/C/AdventOfCode2024/day_11/aoc2024_d11_input.txt"],
+            "args": ["C:/Users/lumas/Documents/Programming/C/AdventOfCode2024/day_11/example.txt", "1"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
@@ -19,7 +21,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/day_08/day_08.exe",
+            "program": "${workspaceFolder}/day_11/day_11.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

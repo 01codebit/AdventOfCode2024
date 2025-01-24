@@ -11,6 +11,7 @@ char *read_line(char *filename, int debug)
 
     if (input)
     {
+        if(debug) printf("[read_line] reading '%s'\n", filename);
         int exit = 1;
         while (exit)
         {
@@ -42,11 +43,40 @@ char *read_line(char *filename, int debug)
 
     if (debug)
     {
-        printf("\n");
         printf("[read_line] read a line with len %d\n", len);
         printf("[read_line] line: '%s'\n", line);
-        printf("\n");
     }
 
     return line;
+}
+
+
+void print_list_to_file(char* filename, linked_list **plist)
+{
+    FILE *output = fopen(filename, "w");
+    if(!output)
+    {
+        fprintf(stderr, "[fopen] unable to open the file '%s': %s [errno:%d]\n", filename, strerror(errno), errno);
+        return;
+    }
+
+    linked_list *list = *plist;
+    node *current_node = list->first;
+    // printf("[print_list_to_file] linked list length: %d print to file '%s'\n", list->count, filename);
+
+    int count = 0;
+    while (current_node != NULL)
+    {
+        // printf("[%d] %lld ", count, current_node->value);
+        fprintf(output, "%lld", current_node->value);
+        current_node = current_node->next;
+        count++;
+        if (current_node != NULL)
+        {
+            // printf("-> ");
+            fprintf(output, " ");
+        }
+    }
+    
+    fclose(output);
 }

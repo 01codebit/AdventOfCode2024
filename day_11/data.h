@@ -5,8 +5,8 @@
 #define CHUNK_SIZE 256
 #define DEBUG 1
 
-#define PART 1
-
+#define MAX_NODES 200000
+#define MAX_LISTS 10000
 
 struct _node
 {
@@ -19,6 +19,7 @@ typedef struct _node node;
 typedef struct
 {
     node *first;
+    // node *pre_last;
     long long count;
 } linked_list;
 
