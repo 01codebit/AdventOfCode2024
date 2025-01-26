@@ -9,6 +9,8 @@
         "utility.h": "c",
         "map_parser.h": "c",
         "main.h": "c",
-        "utility": "c"
+        "utility": "c",
+        "computing.h": "c",
+        "string.h": "c"
     }
 }
