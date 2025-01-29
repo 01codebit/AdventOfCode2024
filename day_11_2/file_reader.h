@@ -5,3 +5,5 @@
 #include "..\common\printer.h"
 
 char *read_line(char *filename, int debug);
+
+void print_list_to_file(char* filename, node *list, long long nodes_count);

@@ -95,6 +95,10 @@ void split_linked_list(const char *filename_format, int list_number, int new_lis
 
 int main(int argc, char *argv[])
 {
+
+    size_t s = sizeof(long long int);
+    printf("sizeof(long long int): %lld\n", s); return 0;
+
     // defaults
     char *filename = "example.txt";
     int debug = 0;
@@ -182,8 +186,13 @@ int main(int argc, char *argv[])
 
     time(&start_t);
 
+    time_t step_start_t, step_end_t;
+    double step_diff_t;
+
     for (int i = 0; i < steps; i++)
     {
+        time(&step_start_t);
+
         total_nodes = 0;
 
         if (debug)
@@ -252,10 +261,12 @@ int main(int argc, char *argv[])
         else if (debug)
             printf("[main] no split needed\n");
 
-        if (debug)
-            printf("\n[main][step %02d/%02d] lists: %d - total nodes: %lld\n", i + 1, steps, llist_count, total_nodes);
+        time(&step_end_t);
+        step_diff_t = difftime(step_end_t, step_start_t);
+        fprintf(log_file, "[%02d/%02d] %5d %25lld (%f s)\n", i + 1, steps, llist_count, total_nodes, step_diff_t);
 
-        fprintf(log_file, "[%02d/%02d]\t%d\t%lld\n", i + 1, steps, llist_count, total_nodes);
+        // if (debug)
+            printf("[main][%02d/%02d] %5d %25lld (%f s)\n", i + 1, steps, llist_count, total_nodes, step_diff_t);
 
         if (debug)
         {

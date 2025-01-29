@@ -49,3 +49,32 @@ char *read_line(char *filename, int debug)
 
     return line;
 }
+
+void print_list_to_file(char* filename, node *list, long long nodes_count)
+{
+    printf("[print_list_to_file] filename: '%s', count: %lld\n", filename, nodes_count);
+    FILE *output = fopen(filename, "w");
+    if(!output)
+    {
+        fprintf(stderr, "[fopen] unable to open the file '%s': %s [errno:%d]\n", filename, strerror(errno), errno);
+        return;
+    }
+
+    // node *list = *plist;
+    // printf("[print_list_to_file] linked list length: %d print to file '%s'\n", list->count, filename);
+    for(long long i=0; i<nodes_count; i++)
+    {    
+        node current_node = list[i];
+        // if(i<3)
+        //     printf("[%d] %lld ", i, current_node.value);
+        fprintf(output, "%lld", current_node.value);
+        printf("[%lld] %lld\n", i, current_node.value);
+        if(i!=nodes_count-1)
+        {
+            fprintf(output, " ");
+        }
+    }
+    // printf("...\n");
+    
+    fclose(output);
+}

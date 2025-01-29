@@ -15,4 +15,15 @@ typedef struct
     long long value;
 } node;
 
+typedef struct
+{
+    long long input_list_id;
+    long long output_list_id_1;
+    long long output_list_id_2;
+    int steps;
+    int debug; 
+    long long nodes_count;
+} thread_args;
+
+
 #endif
