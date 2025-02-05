@@ -116,7 +116,6 @@ void compute_n_steps_thread(thread_args *args)
     // long long result = compute_n_steps(*(args->nodes), args->start_node_count, args->steps, args->debug, args->log_file);
     // args->result = result;
 
-
     const char *filename_format = "output/list_%lld.txt";
     char input_filename[30];
     sprintf(input_filename, filename_format, args->input_list_id);
@@ -133,11 +132,10 @@ void compute_n_steps_thread(thread_args *args)
     char output_filename[30];
     sprintf(output_filename, filename_format, args->output_list_id_1);
     printf("[compute_n_steps_thread][thread#%lld] try to write file '%s'\n", tid, output_filename);
-    print_list_to_file(output_filename, nodes, count);
+    print_list_to_file(output_filename, &nodes, count);
 
     args->nodes_count = count;
 }
-
 
 long long compute_n_steps(node *nodes, long long start_node_count, int steps, int debug, FILE *log_file)
 {
@@ -229,7 +227,6 @@ long long compute_n_steps(node *nodes, long long start_node_count, int steps, in
             {
                 nodes_chunks++;
                 nodes = (node *)realloc(nodes, nodes_chunks * CHUNK_SIZE * sizeof(node));
-                printf("[compute_n_steps] ****** nodes array reallocated to size %lld\n", nodes_chunks * CHUNK_SIZE);
             }
             nodes[total_node_count] = nd;
 
@@ -307,7 +304,10 @@ long long compute_n_steps(node *nodes, long long start_node_count, int steps, in
                     nodes_chunks++;
                     nodes = (node *)realloc(nodes, nodes_chunks * CHUNK_SIZE * sizeof(node));
                 }
-                 printf("nodes[%lld/%lld] = %lld\n", total_node_count, nodes_chunks * CHUNK_SIZE, nd.value);
+
+                if (debug)
+                    printf("nodes[%lld/%lld] = %lld\n", total_node_count, nodes_chunks * CHUNK_SIZE, nd.value);
+
                 nodes[total_node_count] = nd;
 
                 total_node_count++;
@@ -319,6 +319,9 @@ long long compute_n_steps(node *nodes, long long start_node_count, int steps, in
             }
         }
     }
+
+    
+    fprintf(log_file, "[compute_n_steps] nodes array reallocated to size %lld\n", nodes_chunks * CHUNK_SIZE);
 
     time(&end_t);
     diff_t = difftime(end_t, start_t);

@@ -1,0 +1,9 @@
+Current local time and date: Wed Feb  5 11:56:43 2025
+
+Input file: '.\example_1.txt'
+Steps: 25
+
+
+[finished 25 steps] nodes count: 19778
+
+Execution time = 0.000000 s (00:00:00)

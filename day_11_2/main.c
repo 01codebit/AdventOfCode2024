@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     const char *filename_format = "output/list_%lld.txt";
     char llist_filename[30];
     sprintf(llist_filename, filename_format, list_count);
-    print_list_to_file(llist_filename, nodes, nodes_count);
+    print_list_to_file(llist_filename, &nodes, nodes_count);
 
 
     // long long total_count = compute_n_steps(nodes, nodes_count, steps, debug, log_file);
