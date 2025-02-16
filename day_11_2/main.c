@@ -94,6 +94,16 @@ int main(int argc, char *argv[])
     print_list_to_file(llist_filename, nodes, nodes_count);
 
 
+    long long total_count = 0;
+    
+    for(int i=0; i<steps; i++)
+    {
+        total_count = compute_step_to_file(filename_format, i);
+        printf("[step: %d/%d] count: %lld\n", i+1, steps, total_count);
+        fprintf(log_file, "[step: %d/%d] count: %lld\n", i+1, steps, total_count);
+    }
+
+/*
     // long long total_count = compute_n_steps(nodes, nodes_count, steps, debug, log_file);
     // long long total_count = compute_n_nodes(nodes, nodes_count, steps, debug, log_file);
     // if (debug)
@@ -113,12 +123,12 @@ int main(int argc, char *argv[])
         args.debug = debug;
         pthread_create(&tid, NULL, compute_n_steps_thread, &args);
         pthread_join(tid, NULL);
-        printf("tid result: %lld\n", args.nodes_count);
+        printf("[main] thread#%d result: %lld\n", tid, args.nodes_count);
 
         total_count += args.nodes_count;
     // }
     // ----------------------------------------------------------
-
+*/
     time(&end_t);
     diff_t = difftime(end_t, start_t);
 
