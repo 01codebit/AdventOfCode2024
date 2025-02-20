@@ -1,8 +1,0 @@
-Current local time and date: Thu Feb 20 08:31:21 2025
-
-Input file: '.\aoc2024_d11_input.txt'
-Steps: 75
-
-Step 75: nodes count is 234568186890978
-
-Elapsed time = 42.988998 ms
