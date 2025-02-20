@@ -13,6 +13,8 @@ char *read_line(char *filename, int debug)
     {
         if (debug)
             printf("[read_line] reading '%s'\n", filename);
+        if (debug)
+            printf("[read_line] reading '%s'\n", filename);
         int exit = 1;
         while (exit)
         {

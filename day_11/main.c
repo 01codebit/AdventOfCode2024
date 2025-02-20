@@ -95,10 +95,6 @@ void split_linked_list(const char *filename_format, int list_number, int new_lis
 
 int main(int argc, char *argv[])
 {
-
-    size_t s = sizeof(long long int);
-    printf("sizeof(long long int): %lld\n", s); return 0;
-
     // defaults
     char *filename = "example.txt";
     int debug = 0;
