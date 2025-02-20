@@ -488,7 +488,7 @@ long long compute_step_to_file(const char *filename_format, int source_file_coun
     if (!source)
     {
         fprintf(stderr, "[compute_step_to_file] unable to open the file '%s': %s [errno:%d]\n", source_filename, strerror(errno), errno);
-        return;
+        return 0;
     }
 
     // printf("[compute_step_to_file] open dest file '%s'\n", dest_filename);
@@ -496,7 +496,7 @@ long long compute_step_to_file(const char *filename_format, int source_file_coun
     if (!dest)
     {
         fprintf(stderr, "[compute_step_to_file] unable to open the file '%s': %s [errno:%d]\n", dest_filename, strerror(errno), errno);
-        return;
+        return 0;
     }
 
     char buffer[30];
