@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-#include <pthread.h>
+#include <sys/time.h>
 
 #include "../common/printer.h"
 #include "file_reader.h"
 #include "computing.h"
+
+float timedifference_msec(struct timeval t0, struct timeval t1)
+{
+    return (t1.tv_sec - t0.tv_sec) * 1000.0f + (t1.tv_usec - t0.tv_usec) / 1000.0f;
+}
 
 int main(int argc, char *argv[])
 {
@@ -15,10 +19,11 @@ int main(int argc, char *argv[])
     int debug = 0;
     int steps = 1;
 
-    char filter = ' ';
-
     time_t start_t, end_t;
     double diff_t;
+
+    struct timeval t0;
+    struct timeval t1;
 
     if (argc > 1)
     {
@@ -73,78 +78,36 @@ int main(int argc, char *argv[])
     fprintf(log_file, "Input file: '%s'\n", filename);
     fprintf(log_file, "Steps: %d\n\n", steps);
 
-    time(&start_t);
-
     // read initial list
     char *list = read_line(filename, debug);
     printf("[main] read line: %s\n", list);
 
     long long chunks = 1;
-    node *nodes = (node *)malloc(chunks * CHUNK_SIZE * sizeof(node));
-    long long nodes_count = convert_to_node_array(nodes, list, chunks, debug);
-    // if(debug)
+    long long int *values = (long long int *)malloc(chunks * CHUNK_SIZE * sizeof(long long int));
+    long long nodes_count = convert_to_values_array(values, list, chunks, debug);
+
     printf("[main] initial nodes count: %lld\n", nodes_count);
-    if (debug)
-        print_nodes_array(nodes, nodes_count);
 
-    long long list_count = 0;
-    const char *filename_format = "output/list_%lld.txt";
-    char llist_filename[30];
-    sprintf(llist_filename, filename_format, list_count);
-    print_list_to_file(llist_filename, nodes, nodes_count);
+    gettimeofday(&t0, 0);
 
+    long long total_count = compute_depth_r(values, nodes_count, steps);
 
-    long long total_count = 0;
-    
-    for(int i=0; i<steps; i++)
-    {
-        total_count = compute_step_to_file(filename_format, i);
-        printf("[step: %d/%d] count: %lld\n", i+1, steps, total_count);
-        fprintf(log_file, "[step: %d/%d] count: %lld\n", i+1, steps, total_count);
-    }
-
-/*
-    // long long total_count = compute_n_steps(nodes, nodes_count, steps, debug, log_file);
-    // long long total_count = compute_n_nodes(nodes, nodes_count, steps, debug, log_file);
-    // if (debug)
-    //     print_nodes_array(nodes, total_count);
-
-    // multithreaded version ------------------------------------
-    long long total_count = 0;
-
-    pthread_t tid;
-    thread_args args;
-
-    // for(int i=0; i<8; i++)
-    // {
-        args.input_list_id = list_count;
-        args.output_list_id_1 = list_count + 1;
-        args.steps = steps;
-        args.debug = debug;
-        pthread_create(&tid, NULL, compute_n_steps_thread, &args);
-        pthread_join(tid, NULL);
-        printf("[main] thread#%d result: %lld\n", tid, args.nodes_count);
-
-        total_count += args.nodes_count;
-    // }
-    // ----------------------------------------------------------
-*/
-    time(&end_t);
-    diff_t = difftime(end_t, start_t);
+    gettimeofday(&t1, 0);
+    float elapsed = timedifference_msec(t0, t1);
 
     // results output ------------------------------------------------------------------
     printf("[main] nodes count after %d steps: %lld\n", steps, total_count);
-    printf("[main] execution time = %f s (%s)\n\n", diff_t, get_time_string(diff_t));
+    printf("[main] elapsed time = %f ms\n\n", elapsed);
 
     fprintf(log_file, "\n[finished %d steps] nodes count: %lld\n\n", steps, total_count);
-    fprintf(log_file, "Execution time = %f s (%s)\n", diff_t, get_time_string(diff_t));
+    fprintf(log_file, "Elapsed time = %f ms\n", elapsed);
     // results output ------------------------------------------------------------------
 
     // close used files
     fclose(log_file);
 
     // free used memory
-    free(nodes);
+    free(values);
 
     return 0;
 }

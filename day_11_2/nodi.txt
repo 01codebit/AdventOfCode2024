@@ -46,3 +46,13 @@
 [step: 46/50] count: 1276045084
 [step: 47/50] count: 1936768376
 [step: 48/50] count: 2943980281
+[step: 49/50] count: 4469383139 execution time = 1122.000000 s (00:18:42)
+[step: 50/50] count: 6789664325 circa 28 minuti
+
+
+
+[main] nodes count after 75 steps: 234568186890978
+[main] elapsed time = 49.130001 ms
+
+[main] nodes count after 100 steps: 8104002900313339718
+[main] elapsed time = 86.412003 ms

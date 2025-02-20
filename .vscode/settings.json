@@ -11,7 +11,8 @@
         "main.h": "c",
         "utility": "c",
         "computing.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "search.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
