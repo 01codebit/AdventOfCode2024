@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
+#include <assert.h>
 
 #include "../common/printer.h"
 #include "file_reader.h"
@@ -87,18 +88,24 @@ int main(int argc, char *argv[])
     char *list = read_line(filename, debug);
     printf("[main] read line: %s\n", list);
 
-    long long chunks = 1;
-    long long int *values = (long long int *)malloc(chunks * CHUNK_SIZE * sizeof(long long int));
-    long long nodes_count = convert_to_values_array(values, list, chunks, debug);
+    LLINT chunks = 1;
+    LLINT *values = (LLINT *)malloc(chunks * CHUNK_SIZE * sizeof(LLINT));
+    LLINT nodes_count = convert_to_values_array(values, list, chunks, debug);
 
     printf("[main] initial nodes count: %lld\n", nodes_count);
 
+    if (use_cache)
+        cache_pool_init();
+
     gettimeofday(&t0, 0);
 
-    long long total_count = compute_depth_r(values, nodes_count, steps, use_cache);
+    LLINT total_count = compute_depth_r(values, nodes_count, steps, use_cache);
 
     gettimeofday(&t1, 0);
     float elapsed = timedifference_msec(t0, t1);
+
+    if (use_cache)
+        free_cache_pool();
 
     // results output ------------------------------------------------------------------
     printf("[main] nodes count after %d steps: %lld\n", steps, total_count);
@@ -107,6 +114,9 @@ int main(int argc, char *argv[])
     fprintf(log_file, "Step %d: nodes count is %lld\n\n", steps, total_count);
     fprintf(log_file, "Elapsed time = %f ms\n", elapsed);
     // results output ------------------------------------------------------------------
+
+    if (steps == 75)
+        assert(total_count == 234568186890978);
 
     // close used files
     fclose(log_file);

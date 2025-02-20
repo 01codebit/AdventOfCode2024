@@ -3,13 +3,14 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
-#include <pthread.h>
 #include "file_reader.h"
 
 #include "data.h"
 
-char *get_time_string(float time);
+void cache_pool_init();
 
-long long int convert_to_values_array(long long int *values, char *str, long long chunks, int debug);
+void free_cache_pool();
 
-long long int compute_depth_r(long long int *values, int values_count, int target, int use_cache);
+LLINT convert_to_values_array(LLINT *values, char *str, LLINT chunks, int debug);
+
+LLINT compute_depth_r(LLINT *values, int values_count, int target, int use_cache);

@@ -54,5 +54,9 @@
 [main] nodes count after 75 steps: 234568186890978
 [main] elapsed time = 49.130001 ms
 
+[main] nodes count after 75 steps: 234568186890978
+[main] elapsed time = 31.761000 ms
+
+
 [main] nodes count after 100 steps: 8104002900313339718
 [main] elapsed time = 86.412003 ms

@@ -3,61 +3,32 @@
 #include "uthash.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
+
 
 typedef struct
 {
-    long long int id; /* we'll use this field as the key */
-    long long int result;
+    LLINT id; /* we'll use this field as the key */
+    LLINT result;
     UT_hash_handle hh; /* makes this structure hashable */
 } entry;
 
-typedef struct
-{
-    long long int x1;
-    long long int x2;
-} split_results;
 
-
-typedef struct
-{
-    long long int id; /* we'll use this field as the key */
-    split_results *result;
-    UT_hash_handle hh; /* makes this structure hashable */
-} split;
-
-
-char *get_time_string(float time)
-{
-    char *result = (char *)malloc(20 * sizeof(char));
-    int s = time == 0 ? 0 : ((int)time) % 60;
-    int m = time == 0 ? 0 : ((int)time - s) / 60;
-
-    int h = 0;
-    if ((m / 60) > 0)
-    {
-        int h = m / 60;
-        m = m % 60;
-    }
-    sprintf(result, "%02d:%02d:%02d", h, m, s);
-
-    return result;
-}
-
-long long int convert_to_values_array(long long int *values, char *str, long long chunks, int debug)
+LLINT convert_to_values_array(LLINT *values, char *str, LLINT chunks, int debug)
 {
     char *token = strtok(str, " ");
     char *end_ptr;
 
-    long long count = 0;
+    LLINT count = 0;
 
     while (token)
     {
-        long long value = strtoll(token, &end_ptr, 10);
+        LLINT value = strtoll(token, &end_ptr, 10);
 
         if (count >= chunks * CHUNK_SIZE)
         {
             chunks++;
-            values = (long long int *)realloc(values, chunks * CHUNK_SIZE * sizeof(long long int));
+            values = (LLINT *)realloc(values, chunks * CHUNK_SIZE * sizeof(LLINT));
         }
 
         values[count] = value;
@@ -71,59 +42,66 @@ long long int convert_to_values_array(long long int *values, char *str, long lon
 }
 
 
-split *splits_cache = NULL;
-int total_splits_cache_size = 0;
-long long int splits_cache_hits = 0;
-
-void splits_cache_insert(long long int id, long long int result1, long long int result2)
-{
-    split_results *rs = (split_results *)malloc(sizeof(split_results));
-    rs->x1 = result1;
-    rs->x2 = result2;
-
-    split *sp = (split *)malloc(sizeof(split));
-    sp->id = id;
-    sp->result = rs;
-
-    HASH_ADD_INT(splits_cache, id, sp);
-    total_splits_cache_size++;
-}
-
-split_results *splits_cache_lookup(long long int value)
-{
-    split *sp = NULL;
-    HASH_FIND_INT(splits_cache, &value, sp);
-
-    if (sp)
-    {
-        splits_cache_hits++;
-        return sp->result;
-    }
-    else
-        return NULL;
-}
-
-
-
 
 entry *entry_cache = NULL;
 int total_cache_size = 0;
-long long int cache_hits = 0;
+LLINT cache_hits = 0;
 
-void cache_insert(long long int value, int step, long long int result)
+#define POOL_SIZE 200000
+entry *entry_pool[POOL_SIZE];
+int next_entry = 0;
+
+void cache_pool_init()
 {
-    entry *e = (entry *)malloc(sizeof(entry));
-    long long int id = value * 100 + step;
+    for(int i=0; i<POOL_SIZE; i++)
+    {
+        entry *e = (entry *)malloc(sizeof(entry));
+        entry_pool[i] = e;
+    }
+}
+
+void free_cache_pool()
+{
+    for(int i=0; i<POOL_SIZE; i++)
+    {
+        free(entry_pool[i]);
+    }
+}
+
+entry *get_entry()
+{
+    entry *e = entry_pool[next_entry];
+    next_entry++;
+    return e;
+}
+
+// LLINT array_cache[40952650956874];
+
+LLINT max_value_in_cache = 0;
+
+LLINT get_id(LLINT value, int step)
+{
+    LLINT id = (value * 100 + step);
+    return id;
+}
+
+
+void cache_insert(LLINT value, int step, LLINT result)
+{
+    entry *e = get_entry();
+    LLINT id = get_id(value, step);
     e->id = id;
     e->result = result;
 
     HASH_ADD_INT(entry_cache, id, e);
     total_cache_size++;
+
+    if(max_value_in_cache<id) max_value_in_cache = id;
 }
 
-long long int cache_lookup(long long int value, int step)
+LLINT cache_lookup(LLINT value, int step)
 {
-    long long int id = value * 100 + step;
+    LLINT id = get_id(value, step);
     entry *e = NULL;
     HASH_FIND_INT(entry_cache, &id, e);
 
@@ -133,12 +111,12 @@ long long int cache_lookup(long long int value, int step)
         return e->result;
     }
     else
-        return -1;
+        return 0;
 }
 
-long long int computed_nodes = 0;
+LLINT computed_nodes = 0;
 
-long long int compute_node_r(long long int value, int step, int target, int use_cache)
+LLINT compute_node_r(LLINT value, int step, int target, int use_cache)
 {
     computed_nodes++;
     if (step == target)
@@ -147,8 +125,8 @@ long long int compute_node_r(long long int value, int step, int target, int use_
     // lookup cache
     if (use_cache)
     {
-        long long int cached = cache_lookup(value, step);
-        if (cached > 0)
+        LLINT cached = cache_lookup(value, step);
+        if (cached != 0)
         {
             return cached;
         }
@@ -166,7 +144,7 @@ long long int compute_node_r(long long int value, int step, int target, int use_
         3) If none of the other rules apply, the stone is replaced by a new stone; the old stone's number multiplied by 2024 is engraved on the new stone.
     */
 
-    long long int result = 0;
+    LLINT result = 0;
 
     if (value == 0)
     {
@@ -174,28 +152,11 @@ long long int compute_node_r(long long int value, int step, int target, int use_
     }
     else if (len > 1 && len % 2 == 0)
     {
-        // lookup cache
-        if (use_cache)
-        {
-            split_results *res = splits_cache_lookup(value);
-            if (res)
-            {
-                result = compute_node_r(res->x1, new_step, target, use_cache) 
-                    + compute_node_r(res->x2, new_step, target, use_cache);
-            }
-        }
-
         int len_h = len / 2;
-        long long p = pow(10, len_h);
-        long long x1 = value / p;
-        long long r = x1 * p;
-        long long x2 = value - r;
-
-        // insert in cache
-        if (use_cache)
-        {
-            splits_cache_insert(value, x1, x2);
-        }
+        LLINT p = pow(10, len_h);
+        LLINT x1 = value / p;
+        LLINT r = x1 * p;
+        LLINT x2 = value - r;
 
         result = compute_node_r(x1, new_step, target, use_cache) + compute_node_r(x2, new_step, target, use_cache);
     }
@@ -213,20 +174,20 @@ long long int compute_node_r(long long int value, int step, int target, int use_
     return result;
 }
 
-long long int compute_depth_r(long long int *values, int values_count, int target, int use_cache)
+LLINT compute_depth_r(LLINT *values, int values_count, int target, int use_cache)
 {
-    long long int result = 0;
+    LLINT result = 0;
 
     for (int i = 0; i < values_count; i++)
     {
         result += compute_node_r(values[i], 0, target, use_cache);
     }
 
-    printf("[compute_depth_r] computed nodes:    %lld\n", computed_nodes);
-    printf("[compute_depth_r] total cache size:  %d\n", total_cache_size);
-    printf("[compute_depth_r] cache hits:        %lld\n", cache_hits);
-    printf("[compute_depth_r] splits cache size: %d\n", total_splits_cache_size);
-    printf("[compute_depth_r] splits cache hits: %lld\n", splits_cache_hits);
+    printf("[compute_depth_r] computed nodes:     %lld\n", computed_nodes);
+    printf("[compute_depth_r] total cache size:   %d\n", total_cache_size);
+    printf("[compute_depth_r] cache hits:         %lld\n", cache_hits);
+    
+    printf("[compute_depth_r] max_value_in_cache: %lld\n", max_value_in_cache);
     
     return result;
 }

@@ -12,7 +12,8 @@
         "utility": "c",
         "computing.h": "c",
         "string.h": "c",
-        "search.h": "c"
+        "search.h": "c",
+        "data.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
