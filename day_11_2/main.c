@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     printf("[main] nodes count after %d steps: %lld\n", steps, total_count);
     printf("[main] elapsed time = %f ms\n\n", elapsed);
 
-    fprintf(log_file, "\n[finished %d steps] nodes count: %lld\n\n", steps, total_count);
+    fprintf(log_file, "Step %d: nodes count is %lld\n\n", steps, total_count);
     fprintf(log_file, "Elapsed time = %f ms\n", elapsed);
     // results output ------------------------------------------------------------------
 
