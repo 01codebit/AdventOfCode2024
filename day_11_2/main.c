@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
     char *filename = "example.txt";
     int debug = 0;
     int steps = 1;
+    int use_cache = 1;
 
     time_t start_t, end_t;
     double diff_t;
@@ -59,9 +60,13 @@ int main(int argc, char *argv[])
             {
                 debug = 1;
             }
+            else if (argv[3][0] == 'c')
+            {
+                use_cache = 0;
+            }
         }
     }
-    printf("[main] filename: '%s', steps: %d, debug: %d\n", filename, steps, debug);
+    printf("[main] filename: '%s', steps: %d, debug: %d, use_cache: %d\n", filename, steps, debug, use_cache);
 
     FILE *log_file = fopen("log.txt", "w");
     if (!log_file)
@@ -90,7 +95,7 @@ int main(int argc, char *argv[])
 
     gettimeofday(&t0, 0);
 
-    long long total_count = compute_depth_r(values, nodes_count, steps);
+    long long total_count = compute_depth_r(values, nodes_count, steps, use_cache);
 
     gettimeofday(&t1, 0);
     float elapsed = timedifference_msec(t0, t1);
