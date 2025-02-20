@@ -19,3 +19,5 @@ long long compute_n_steps(node *nodes, long long start_node_count, int steps, in
 long long compute_n_nodes(node *nodes, long long start_node_count, int steps, int debug, FILE *log_file);
 
 void compute_n_steps_thread(thread_args *args);
+
+long long compute_step_to_file(const char *filename_format, int source_file_counter);

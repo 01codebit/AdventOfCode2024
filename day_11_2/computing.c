@@ -227,6 +227,7 @@ long long compute_n_steps(node *nodes, long long start_node_count, int steps, in
             {
                 nodes_chunks++;
                 nodes = (node *)realloc(nodes, nodes_chunks * CHUNK_SIZE * sizeof(node));
+                // printf("[compute_n_steps] ****** nodes array reallocated to size %lld\n", nodes_chunks * CHUNK_SIZE);
             }
             nodes[total_node_count] = nd;
 
@@ -304,10 +305,7 @@ long long compute_n_steps(node *nodes, long long start_node_count, int steps, in
                     nodes_chunks++;
                     nodes = (node *)realloc(nodes, nodes_chunks * CHUNK_SIZE * sizeof(node));
                 }
-
-                if (debug)
-                    printf("nodes[%lld/%lld] = %lld\n", total_node_count, nodes_chunks * CHUNK_SIZE, nd.value);
-
+                // printf("nodes[%lld/%lld] = %lld\n", total_node_count, nodes_chunks * CHUNK_SIZE, nd.value);
                 nodes[total_node_count] = nd;
 
                 total_node_count++;
@@ -474,4 +472,122 @@ long long compute_n_nodes(node *nodes, long long start_node_count, int steps, in
     free(buffer);
 
     return total_node_count;
+}
+
+long long compute_step_to_file(const char *filename_format, int source_file_counter)
+{
+    char source_filename[30];
+    sprintf(source_filename, filename_format, source_file_counter);
+
+    char dest_filename[30];
+    int dest_file_counter = source_file_counter + 1;
+    sprintf(dest_filename, filename_format, dest_file_counter);
+
+    // printf("[compute_step_to_file] open source file '%s'\n", source_filename);
+    FILE *source = fopen(source_filename, "r");
+    if (!source)
+    {
+        fprintf(stderr, "[compute_step_to_file] unable to open the file '%s': %s [errno:%d]\n", source_filename, strerror(errno), errno);
+        return;
+    }
+
+    // printf("[compute_step_to_file] open dest file '%s'\n", dest_filename);
+    FILE *dest = fopen(dest_filename, "w");
+    if (!dest)
+    {
+        fprintf(stderr, "[compute_step_to_file] unable to open the file '%s': %s [errno:%d]\n", dest_filename, strerror(errno), errno);
+        return;
+    }
+
+    char buffer[30];
+    int count = 0;
+    char ch = 0;
+    char out_buffer[30];
+
+    long long int node_count = 0;
+
+    while (ch != EOF)
+    {
+        ch = fgetc(source);
+        if (ch == ' ' || ch == EOF)
+        {
+            buffer[count] = '\0';
+            // printf("%s (len: %d)\n", buffer, strlen(buffer));
+            count = 0;
+
+            char *end_ptr;
+            long long val = strtoll(buffer, &end_ptr, 10);
+
+            /*
+                first applicable rule in this list:
+
+                1) If the stone is engraved with the number 0, it is replaced by a stone engraved with the number 1.
+                2) If the stone is engraved with a number that has an even number of digits, it is replaced by two stones. The left half of the digits are engraved on the new left stone, and the right half of the digits are engraved on the new right stone. (The new numbers don't keep extra leading zeroes: 1000 would become stones 10 and 0.)
+                3) If none of the other rules apply, the stone is replaced by a new stone; the old stone's number multiplied by 2024 is engraved on the new stone.
+            */
+
+            if (val == 0)
+            {
+                val = 1;
+                sprintf(out_buffer, "%lld", val);
+                
+                node_count++;
+            }
+            else if (strlen(buffer) % 2 == 0)
+            {
+                int half = strlen(buffer) / 2;
+                char *end_ptr;
+
+                char t1[30];
+                for(int i = 0; i < half; i++)
+                {
+                    t1[i] = buffer[i];
+                }
+                t1[half] = '\0';
+                long long int v1 = strtoll(t1, &end_ptr, 10);
+
+                char t2[30];
+                for(int i = half; i < strlen(buffer); i++)
+                {
+                    t2[i-half] = buffer[i];
+                }
+                t2[half] = '\0';
+                long long int v2 = strtoll(t2, &end_ptr, 10);
+
+                sprintf(out_buffer, "%lld %lld", v1, v2);
+                // printf("'%s' len: %d half: %d ---> t1:'%s' t2:'%s'\n", buffer, strlen(buffer), half, t1, t2);
+
+                node_count += 2;
+            }
+            else
+            {
+                val *= 2024;
+                sprintf(out_buffer, "%lld", val);
+                
+                node_count++;
+            }
+
+            fprintf(dest, "%s", out_buffer);
+
+            if(ch!=EOF) fprintf(dest, " ");
+        }
+        else
+        {
+            buffer[count] = ch;
+            count++;
+        }
+    }
+
+    int fc = fclose(source);
+    if(fc!=0)
+    {
+        fprintf(stderr, "[compute_step_to_file] error closing source: %s [errno:%d]\n", strerror(errno), errno);
+    }
+    fc = fclose(dest);
+    if(fc!=0)
+    {
+        fprintf(stderr, "[compute_step_to_file] error closing dest: %s [errno:%d]\n", strerror(errno), errno);
+    }
+
+    return node_count;
 }

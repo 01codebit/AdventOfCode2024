@@ -2,7 +2,7 @@
 #ifndef _DATA
 #define _DATA
 
-#define CHUNK_SIZE 1024
+#define CHUNK_SIZE 200000
 #define DEBUG 1
 
 #define OUTPUT 0
