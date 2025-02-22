@@ -17,6 +17,8 @@ struct _node
     NUM_TYPE area;
     NUM_TYPE perimeter;
     struct _node *next;
+    int first_x;
+    int first_y;
 };
 
 typedef struct _node region;

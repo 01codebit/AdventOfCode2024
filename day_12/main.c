@@ -11,17 +11,17 @@ float timedifference_msec(struct timeval t0, struct timeval t1)
     return (t1.tv_sec - t0.tv_sec) * 1000.0f + (t1.tv_usec - t0.tv_usec) / 1000.0f;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     struct timeval t0;
     struct timeval t1;
 
     // defaults
-    char* filename = "example_1.txt";
+    char *filename = "example_1.txt";
 
-    if(argc>1)
+    if (argc > 1)
     {
-        if(strcmp("help", argv[1]) == 0)
+        if (strcmp("help", argv[1]) == 0)
         {
             printf("\nProvide arguments: <char* filename>\n\n");
             return 0;
@@ -33,15 +33,26 @@ int main(int argc, char* argv[])
     data t = read_matrix(filename);
     printf("[main] matrix rows:%d x cols:%d\n", t.rows, t.cols);
 
+/*  
+    // print matrix
+    for (int cc = 0; cc < t.cols * t.rows; cc++)
+    {
+        int x = cc % t.cols;
+        int y = (int)(cc / t.cols);
+        printf("(%d:%d) %c ", x, y, t.matrix[y][x]);
+        if (x == (t.cols - 1))
+            printf("\n");
+    }
+*/
     gettimeofday(&t0, 0);
 
-    region regions[100];
+    region regions[1000];
     int regions_count = 0;
     scan_matrix(t, regions, &regions_count);
 
     int total_cost = 0;
     int region_cost = 0;
-    for(int i=0; i<regions_count; i++)
+    for (int i = 0; i < regions_count; i++)
     {
         printf("[main] region: %c area: %d perimeter: %d\n", regions[i].name, regions[i].area, regions[i].perimeter);
         region_cost = regions[i].area * regions[i].perimeter;
