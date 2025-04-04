@@ -1,8 +1,7 @@
 #include "computing.h"
 
-void insert_region(char ch, region *regions, int *regions_count, int free_sides)
+void insert_region(const char ch, region *regions, int *regions_count, int free_sides)
 {
-
     int found = 0;
     for (int i = 0; i < (*regions_count); i++)
     {
@@ -38,24 +37,25 @@ void scan_matrix(data dt, region *regions, int *regions_count)
     {
         for (int y = 0; y < dt.rows; y++)
         {
+            char ch = dt.matrix[x][y];
+            // dt.matrix[x][y] = '.';
             // printf("%c ", dt.matrix[x][y]);
             if (dt.matrix[x][y] != '.')
             {
-                if ((x - 1) >= 0 && dt.matrix[x - 1][y] == dt.matrix[x][y])
+                if ((x - 1) >= 0 && dt.matrix[x - 1][y] == ch)
                     free_sides++;
 
-                if ((y - 1) >= 0 && dt.matrix[x][y - 1] == dt.matrix[x][y])
+                if ((y - 1) >= 0 && dt.matrix[x][y - 1] == ch)
                     free_sides++;
 
-                if ((x + 1) < dt.cols && dt.matrix[x + 1][y] == dt.matrix[x][y])
+                if ((x + 1) < dt.cols && dt.matrix[x + 1][y] == ch)
                     free_sides++;
 
-                if ((y + 1) < dt.rows && dt.matrix[x][y + 1] == dt.matrix[x][y])
+                if ((y + 1) < dt.rows && dt.matrix[x][y + 1] == ch)
                     free_sides++;
 
-                // printf("- insert_region [%d, %d]: %c free_sides: %d\n", x, y, dt.matrix[x][y], free_sides);
-                insert_region(dt.matrix[x][y], regions, regions_count, free_sides);
-                
+                insert_region(ch, regions, regions_count, free_sides);
+
                 free_sides = 0;
             }
         }

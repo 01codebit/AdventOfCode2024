@@ -13,6 +13,8 @@ typedef struct
 
 struct _node
 {
+    int first_x;
+    int first_y;
     char name;
     NUM_TYPE area;
     NUM_TYPE perimeter;
